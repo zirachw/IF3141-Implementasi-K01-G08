@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_penjualan_marketing,penjualan.marketing,model_x_data_penjualan,itbpress_b2b.group_staf_marketing,1,1,1,1
+access_penjualan_direktur,penjualan.direktur,model_x_data_penjualan,itbpress_b2b.group_direktur,1,0,0,0
+access_hpp_marketing,hpp.marketing,model_x_hpp,itbpress_b2b.group_staf_marketing,1,0,1,0
+access_hpp_direktur,hpp.direktur,model_x_hpp,itbpress_b2b.group_direktur,1,0,0,0
+access_wizard_dalam_produksi_marketing,wizard.dalam.produksi.marketing,model_itbpress_wizard_dalam_produksi,itbpress_b2b.group_staf_marketing,1,1,1,1
