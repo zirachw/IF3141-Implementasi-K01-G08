@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_wizard_dalam_produksi_form" model="ir.ui.view">
+        <field name="name">itbpress.wizard.dalam.produksi.form</field>
+        <field name="model">itbpress.wizard.dalam.produksi</field>
+        <field name="arch" type="xml">
+            <form string="Konfirmasi Harga Lisensi: Dalam Produksi">
+                <group>
+                    <field name="lead_id" invisible="1"/>
+                    <field name="harga_lisensi" widget="monetary"
+                           options="{'currency_field': false}"
+                           string="Harga Lisensi yang Disepakati (Rp/unit)"/>
+                </group>
+                <div class="o_form_statusbar" style="background:#fffbeb;color:#d97706;
+                            padding:8px 16px;font-size:13px;border-radius:4px;margin-bottom:8px;">
+                    Status pengajuan akan diubah ke <strong>Dalam Produksi</strong>.
+                    Masukkan harga lisensi final yang telah disepakati dengan mitra.
+                </div>
+                <footer>
+                    <button name="action_konfirmasi" type="object" string="Pindahkan ke Dalam Produksi"
+                            class="btn-primary"/>
+                    <button special="cancel" string="Batal"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
