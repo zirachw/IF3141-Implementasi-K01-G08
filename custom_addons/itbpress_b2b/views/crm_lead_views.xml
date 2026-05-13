@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List view: Manajemen B2B -->
+    <record id="view_b2b_lead_list" model="ir.ui.view">
+        <field name="name">crm.lead.b2b.list</field>
+        <field name="model">crm.lead</field>
+        <field name="arch" type="xml">
+            <tree string="Manajemen B2B" decoration-muted="stage_id.fold">
+                <field name="name" string="Nama Produk"/>
+                <field name="partner_id" string="Mitra"/>
+                <field name="x_jenis_produk" string="Jenis Produk"/>
+                <field name="x_sistem" string="Sistem"/>
+                <field name="x_kuantitas_produksi" string="Kuantitas (pcs)"/>
+                <field name="x_rencana_harga_lisensi" string="Rencana Harga Lisensi (Rp/unit)" widget="monetary"
+                       options="{'currency_field': false}"/>
+                <field name="x_harga_lisensi_confirmed" string="Harga Lisensi (Rp/unit)" widget="monetary"
+                       options="{'currency_field': false}"
+                       invisible="stage_id.name != 'Dalam Produksi' and stage_id.name != 'Dirilis'"/>
+                <field name="stage_id" string="Stage" widget="badge"
+                       decoration-info="stage_id.name == 'Negosiasi'"
+                       decoration-warning="stage_id.name == 'Dalam Produksi'"
+                       decoration-success="stage_id.name == 'Dirilis'"
+                       decoration-danger="stage_id.name == 'Ditolak'"/>
+                <field name="date_open" string="Tanggal Pengajuan"/>
+                <button name="action_buka_wizard_dalam_produksi" type="object"
+                        string="→ Dalam Produksi" icon="fa-arrow-right"
+                        invisible="stage_id.name != 'Negosiasi'"
+                        class="btn-warning btn-sm"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view: Manajemen B2B -->
+    <record id="view_b2b_lead_form" model="ir.ui.view">
+        <field name="name">crm.lead.b2b.form</field>
+        <field name="model">crm.lead</field>
+        <field name="arch" type="xml">
+            <form string="Detail Pengajuan B2B">
+                <header>
+                    <field name="stage_id" widget="statusbar"
+                           statusbar_visible="Diajukan,Negosiasi,Dalam Produksi,Dirilis"/>
+                </header>
+                <sheet>
+                    <field name="team_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="x_tab_penjualan_aktif" invisible="1"/>
+                    <group>
+                        <group string="Informasi Pengajuan">
+                            <field name="name" string="Nama Produk" placeholder="Contoh: Kaos Wisuda 2026"/>
+                            <field name="partner_id" string="Mitra"/>
+                            <field name="x_nama_pic" string="Nama PIC"/>
+                            <field name="x_kontak_pic" string="Kontak PIC"/>
+                            <field name="x_tipe_produksi" string="Tipe Produksi"/>
+                            <field name="x_jenis_produk" string="Jenis Produk"/>
+                            <field name="x_sistem" string="Sistem"/>
+                            <field name="x_kuantitas_produksi" string="Kuantitas Produksi (pcs)"/>
+                            <field name="x_rencana_harga_lisensi" string="Rencana Harga Lisensi (Rp/unit)"
+                                   widget="monetary" options="{'currency_field': false}"/>
+                            <field name="x_harga_lisensi_confirmed" string="Harga Lisensi Disepakati (Rp/unit)"
+                                   widget="monetary" options="{'currency_field': false}"
+                                   invisible="stage_id.name not in ['Dalam Produksi', 'Dirilis']"/>
+                        </group>
+                        <group string="Waktu">
+                            <field name="date_open" string="Tanggal Pengajuan"/>
+                            <field name="date_deadline" string="Target Waktu"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="penjualan" string="Data Penjualan"
+                              invisible="not x_tab_penjualan_aktif">
+                            <field name="x_penjualan_ids">
+                                <tree editable="bottom">
+                                    <field name="tanggal"/>
+                                    <field name="saluran"/>
+                                    <field name="jumlah_terjual"/>
+                                    <field name="nilai_penjualan" widget="monetary"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="hpp" string="Histori HPP"
+                              invisible="x_tipe_produksi != 'itb_press'">
+                            <field name="x_hpp_ids">
+                                <tree>
+                                    <field name="tanggal_entri"/>
+                                    <field name="total_hpp" widget="monetary"/>
+                                    <field name="stempel_waktu"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="catatan" string="Catatan">
+                            <field name="description" string="Catatan Negosiasi"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_b2b_lead_search" model="ir.ui.view">
+        <field name="name">crm.lead.b2b.search</field>
+        <field name="model">crm.lead</field>
+        <field name="arch" type="xml">
+            <search string="Cari Pengajuan">
+                <field name="name" string="Nama Produk"/>
+                <field name="partner_id" string="Mitra"/>
+                <field name="stage_id" string="Stage"/>
+                <filter name="aktif" string="Aktif" domain="[('active', '=', True)]"/>
+                <filter name="dirilis" string="Dirilis" domain="[('x_tab_penjualan_aktif', '=', True)]"/>
+                <filter name="ditolak" string="Ditolak" domain="[('stage_id.fold', '=', True)]"/>
+                <separator/>
+                <group expand="1" string="Kelompokkan">
+                    <filter name="group_partner" string="Mitra" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_stage" string="Stage" context="{'group_by': 'stage_id'}"/>
+                    <filter name="group_jenis" string="Jenis Produk" context="{'group_by': 'x_jenis_produk'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_manajemen_b2b" model="ir.actions.act_window">
+        <field name="name">Manajemen B2B</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_b2b_lead_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_b2b_lead_form')}),
+        ]"/>
+        <field name="search_view_id" ref="view_b2b_lead_search"/>
+        <field name="context">{'default_type': 'opportunity'}</field>
+        <field name="domain">[('type', '=', 'opportunity')]</field>
+    </record>
+</odoo>
