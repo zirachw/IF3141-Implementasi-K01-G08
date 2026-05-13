@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ============================================================ -->
+<!--  Base layout                                                  -->
+<!-- ============================================================ -->
+<template id="portal_base_layout" name="ITB Press Portal Layout">
+    <t t-call="web.layout">
+        <t t-set="head">
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+            <t t-call-assets="itbpress_b2b.assets_portal" t-js="false"/>
+        </t>
+        <div class="b2b-layout">
+            <t t-call="itbpress_b2b.portal_sidebar"/>
+            <div class="b2b-main">
+                <t t-out="0"/>
+            </div>
+        </div>
+        <script>
+            window.addEventListener('pageshow', function (e) {
+                if (!e.persisted) { return; }
+                fetch('/web/session/get_session_info', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({jsonrpc: '2.0', method: 'call', id: 1, params: {}})
+                }).then(function(r) { return r.json(); }).then(function(d) {
+                    if (!d.result || !d.result.uid) { window.location.replace('/web/login'); }
+                }).catch(function() { window.location.replace('/web/login'); });
+            });
+        </script>
+    </t>
+</template>
+
+<!-- ============================================================ -->
+<!--  Sidebar                                                      -->
+<!-- ============================================================ -->
+<template id="portal_sidebar" name="ITB Press Portal Sidebar">
+    <aside class="b2b-sidebar">
+        <div class="b2b-brand">
+            <img src="/itbpress_b2b/static/src/img/logo.png" alt="ITB Press"/>
+            <div>
+                <div class="b2b-brand-name">ITB Press</div>
+                <div class="b2b-brand-sub">B2B Portal</div>
+            </div>
+        </div>
+        <nav class="b2b-nav">
+            <a href="/kolaborasi/baru"
+               t-att-class="'b2b-nav-item' + (' active' if active_menu == 'pengajuan' else '')">
+                <span class="b2b-nav-icon">&#43;</span>
+                Pengajuan
+            </a>
+            <a href="/kolaborasi/produk-saya"
+               t-att-class="'b2b-nav-item' + (' active' if active_menu == 'produk_saya' else '')">
+                <span class="b2b-nav-icon">&#9723;</span>
+                Produk Saya
+            </a>
+            <a href="/kolaborasi/penjualan"
+               t-att-class="'b2b-nav-item' + (' active' if active_menu == 'penjualan' else '')">
+                <span class="b2b-nav-icon">&#9650;</span>
+                Penjualan
+            </a>
+        </nav>
+        <div class="b2b-sidebar-footer">
+            <div class="b2b-sidebar-footer-avatar"
+                 t-esc="(request.env.user.partner_id.name or 'M')[0].upper()"/>
+            <div class="b2b-sidebar-footer-info">
+                <div class="b2b-sidebar-footer-name"
+                     t-out="request.env.user.partner_id.name or ''"/>
+                <div class="b2b-sidebar-footer-role">Mitra B2B</div>
+            </div>
+            <a href="/web/session/logout" title="Keluar"
+               class="b2b-sidebar-footer-logout">&#10148;</a>
+        </div>
+    </aside>
+</template>
+
+<!-- ============================================================ -->
+<!--  Shared: period filter bar                                    -->
+<!-- ============================================================ -->
+<template id="portal_filter_bar" name="Portal Filter Bar">
+    <form id="filterForm" method="GET" t-att-action="filter_action">
+        <input type="hidden" name="filter_mode" id="fb-filter-mode" value="preset"/>
+        <div class="b2b-period-bar">
+            <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-right:4px;">Periode:</span>
+            <button type="button" class="btn-b2b-ghost" id="fb-bulan-ini">Bulan Ini</button>
+            <button type="button" class="btn-b2b-ghost" id="fb-3-bulan">3 Bulan Terakhir</button>
+            <button type="button" class="btn-b2b-ghost" id="fb-tahun-ini">Tahun Ini</button>
+            <button type="button" class="btn-b2b-ghost" id="fb-kuartal">Kuartal Ini</button>
+            <button type="button" class="btn-b2b-ghost" id="fb-kustom">Kustom</button>
+            <div id="fb-custom-row" class="b2b-custom-row">
+                <input type="date" id="fb-date-from" name="date_from"
+                       class="b2b-form-control" style="width:auto;" t-att-value="date_from"/>
+                <span style="color:#bbb;font-size:13px;line-height:1;">&#8211;</span>
+                <input type="date" id="fb-date-to" name="date_to"
+                       class="b2b-form-control" style="width:auto;" t-att-value="date_to"/>
+                <button type="submit" class="btn-b2b">Terapkan</button>
+            </div>
+        </div>
+    </form>
+    <script>
+        (function () {
+            function pad(n) { return n &lt; 10 ? '0' + n : '' + n; }
+            function fmt(d) { return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+            var customRow = document.getElementById('fb-custom-row');
+            var kustomBtn = document.getElementById('fb-kustom');
+            var filterMode = document.getElementById('fb-filter-mode');
+            function go(from, to) {
+                filterMode.value = 'preset';
+                document.getElementById('fb-date-from').value = from;
+                document.getElementById('fb-date-to').value = to;
+                document.getElementById('filterForm').submit();
+            }
+            function hilite(id) {
+                ['fb-bulan-ini','fb-3-bulan','fb-tahun-ini','fb-kuartal','fb-kustom'].forEach(function(bid) {
+                    document.getElementById(bid).classList.remove('active');
+                });
+                document.getElementById(id).classList.add('active');
+            }
+            document.getElementById('fb-bulan-ini').addEventListener('click', function () {
+                hilite('fb-bulan-ini'); customRow.classList.remove('visible');
+                var n = new Date();
+                go(fmt(new Date(n.getFullYear(), n.getMonth(), 1)), fmt(n));
+            });
+            document.getElementById('fb-3-bulan').addEventListener('click', function () {
+                hilite('fb-3-bulan'); customRow.classList.remove('visible');
+                var n = new Date(), a = new Date(n);
+                a.setMonth(a.getMonth() - 3); go(fmt(a), fmt(n));
+            });
+            document.getElementById('fb-tahun-ini').addEventListener('click', function () {
+                hilite('fb-tahun-ini'); customRow.classList.remove('visible');
+                var n = new Date();
+                go(fmt(new Date(n.getFullYear(), 0, 1)), fmt(n));
+            });
+            document.getElementById('fb-kuartal').addEventListener('click', function () {
+                hilite('fb-kuartal'); customRow.classList.remove('visible');
+                var n = new Date(), q = Math.floor(n.getMonth() / 3);
+                go(fmt(new Date(n.getFullYear(), q * 3, 1)), fmt(n));
+            });
+            kustomBtn.addEventListener('click', function () {
+                if (customRow.classList.contains('visible')) {
+                    customRow.classList.remove('visible');
+                    kustomBtn.classList.remove('active');
+                } else {
+                    hilite('fb-kustom');
+                    customRow.classList.add('visible');
+                    filterMode.value = 'custom';
+                }
+            });
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('filter_mode') === 'custom' &amp;&amp; document.getElementById('fb-date-from').value) {
+                hilite('fb-kustom');
+                customRow.classList.add('visible');
+            }
+        })();
+    </script>
+</template>
+
+</odoo>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ============================================================ -->
+<!--  Base layout                                                  -->
+<!-- ============================================================ -->
+<template id="internal_base_layout" name="ITB Press Internal Layout">
+    <t t-call="web.layout">
+        <t t-set="head">
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+            <t t-call-assets="itbpress_b2b.assets_internal" t-js="false"/>
+            <style>
+                *, *::before, *::after { box-sizing: border-box; }
+                body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f5f6f8; color: #444; margin: 0; }
+            </style>
+        </t>
+        <div class="itb-layout">
+            <t t-call="itbpress_b2b.internal_sidebar"/>
+            <div class="itb-main">
+                <t t-out="0"/>
+            </div>
+        </div>
+        <script>
+            window.addEventListener('pageshow', function (e) {
+                if (!e.persisted) { return; }
+                fetch('/web/session/get_session_info', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({jsonrpc: '2.0', method: 'call', id: 1, params: {}})
+                }).then(function(r) { return r.json(); }).then(function(d) {
+                    if (!d.result || !d.result.uid) { window.location.replace('/web/login'); }
+                }).catch(function() { window.location.replace('/web/login'); });
+            });
+        </script>
+    </t>
+</template>
+
+<!-- ============================================================ -->
+<!--  Sidebar                                                      -->
+<!-- ============================================================ -->
+<template id="internal_sidebar" name="ITB Press Internal Sidebar">
+    <aside class="itb-sidebar">
+        <div style="padding:12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.10);">
+            <img src="/itbpress_b2b/static/src/img/logo.png" alt="ITB Press" style="width:36px;height:36px;object-fit:contain;border-radius:6px;flex-shrink:0;background:#fff;padding:2px;"/>
+            <div>
+                <div style="font-size:14px;font-weight:600;color:#fff;line-height:1.2;">ITB Press</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.5);">B2B Internal</div>
+            </div>
+        </div>
+        <nav style="flex:1;padding:8px;display:flex;flex-direction:column;gap:4px;">
+            <a href="/manajemen"
+               t-att-class="'itb-nav-item' + (' active' if active_menu == 'manajemen' else '')">
+                <span style="width:16px;text-align:center;flex-shrink:0;">&#9776;</span>
+                Manajemen B2B
+            </a>
+            <a href="/laporan"
+               t-att-class="'itb-nav-item' + (' active' if active_menu == 'laporan' else '')">
+                <span style="width:16px;text-align:center;flex-shrink:0;">&#9650;</span>
+                Laporan Penjualan
+            </a>
+            <a href="/hpp"
+               t-att-class="'itb-nav-item' + (' active' if active_menu == 'hpp' else '')">
+                <span style="width:16px;text-align:center;flex-shrink:0;">&#9432;</span>
+                Historis HPP
+            </a>
+        </nav>
+        <div style="padding:14px 12px;border-top:1px solid rgba(255,255,255,.12);display:flex;align-items:center;gap:10px;">
+            <!-- Avatar initials -->
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;"
+                 t-esc="(request.env.user.name or 'U')[0].upper()"/>
+            <!-- Name + role -->
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                     t-out="request.env.user.name or ''"/>
+                <div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:1px;"
+                     t-out="user_role or ''"/>
+            </div>
+            <!-- Logout -->
+            <a href="/web/session/logout"
+               title="Keluar"
+               style="color:rgba(255,255,255,.45);text-decoration:none;font-size:16px;flex-shrink:0;line-height:1;"
+               >&#10148;</a>
+        </div>
+    </aside>
+</template>
+
+<!-- ============================================================ -->
+<!--  Shared: time filter bar                                      -->
+<!-- ============================================================ -->
+<template id="internal_filter_bar" name="Internal Filter Bar">
+    <form id="filterForm" method="GET" t-att-action="filter_action"
+          style="margin-bottom:16px;">
+        <input type="hidden" name="filter_mode" id="fb-filter-mode" value="preset"/>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:36px;">
+            <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-right:4px;">Periode:</span>
+            <button type="button" class="itb-btn-ghost" id="fb-bulan-ini">Bulan Ini</button>
+            <button type="button" class="itb-btn-ghost" id="fb-3-bulan">3 Bulan</button>
+            <button type="button" class="itb-btn-ghost" id="fb-tahun-ini">Tahun Ini</button>
+            <button type="button" class="itb-btn-ghost" id="fb-kustom">Kustom</button>
+            <div id="fb-custom-row" style="display:none;align-items:center;gap:8px;margin-left:4px;">
+                <input type="date" id="fb-date-from" name="date_from"
+                       class="itb-input" t-att-value="date_from"/>
+                <span style="color:#bbb;font-size:13px;line-height:1;">&#8211;</span>
+                <input type="date" id="fb-date-to" name="date_to"
+                       class="itb-input" t-att-value="date_to"/>
+                <button type="submit" class="itb-btn">Terapkan</button>
+            </div>
+        </div>
+    </form>
+    <script>
+        (function () {
+            function pad(n) { return n &lt; 10 ? '0' + n : '' + n; }
+            function fmt(d) { return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+            var customRow = document.getElementById('fb-custom-row');
+            var kustomBtn = document.getElementById('fb-kustom');
+            var filterMode = document.getElementById('fb-filter-mode');
+            function go(from, to) {
+                filterMode.value = 'preset';
+                document.getElementById('fb-date-from').value = from;
+                document.getElementById('fb-date-to').value = to;
+                document.getElementById('filterForm').submit();
+            }
+            document.getElementById('fb-bulan-ini').addEventListener('click', function () {
+                var n = new Date();
+                go(fmt(new Date(n.getFullYear(), n.getMonth(), 1)), fmt(n));
+            });
+            document.getElementById('fb-3-bulan').addEventListener('click', function () {
+                var n = new Date(), a = new Date(n);
+                a.setMonth(a.getMonth() - 3);
+                go(fmt(a), fmt(n));
+            });
+            document.getElementById('fb-tahun-ini').addEventListener('click', function () {
+                var n = new Date();
+                go(fmt(new Date(n.getFullYear(), 0, 1)), fmt(n));
+            });
+            kustomBtn.addEventListener('click', function () {
+                if (customRow.style.display === 'flex') {
+                    customRow.style.display = 'none';
+                    kustomBtn.classList.remove('active');
+                } else {
+                    customRow.style.display = 'flex';
+                    kustomBtn.classList.add('active');
+                    filterMode.value = 'custom';
+                }
+            });
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('filter_mode') === 'custom' &amp;&amp; document.getElementById('fb-date-from').value) {
+                customRow.style.display = 'flex';
+                kustomBtn.classList.add('active');
+            }
+        })();
+    </script>
+</template>
+
+</odoo>

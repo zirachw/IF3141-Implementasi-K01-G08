@@ -1,0 +1,142 @@
+/* ================================================================
+   ITB Press Internal Portal — itb-* component system
+   Loaded via itbpress_b2b.assets_internal (called explicitly in
+   internal_base.xml) for pages extending internal_base_layout
+   ================================================================ */
+
+/* Layout */
+.itb-layout  { display: flex; min-height: 100vh; }
+.itb-main    { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.itb-topbar  { background: #fff; border-bottom: 1px solid #e6e6e6; padding: 0 24px; height: 56px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
+.itb-content { padding: 24px; flex: 1; overflow-y: auto; }
+
+/* Sidebar */
+.itb-sidebar {
+    width: 256px; min-width: 256px; background: #054a8a;
+    display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0;
+}
+.itb-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 6px;
+    font-size: 13px; color: rgba(255,255,255,.65);
+    text-decoration: none; transition: background .15s;
+}
+.itb-nav-item:hover,
+.itb-nav-item.active { background: rgba(255,255,255,.15); color: #fff; text-decoration: none; }
+
+/* Table header label */
+.itb-th {
+    font-size: 11px; font-weight: 600; color: #999;
+    text-transform: uppercase; letter-spacing: .05em; white-space: nowrap;
+}
+
+/* Inputs */
+.itb-input {
+    height: 34px; border: 1px solid #e6e6e6; border-radius: 6px;
+    padding: 0 10px; font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #444; background: #fff;
+}
+.itb-input:focus { outline: none; border-color: #075BA9; box-shadow: 0 0 0 3px rgba(7,91,169,.12); }
+
+.itb-select {
+    height: 34px; border: 1px solid #e6e6e6; border-radius: 6px;
+    padding: 0 10px; font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #444; background: #fff;
+}
+.itb-select:focus { outline: none; border-color: #075BA9; }
+
+/* Buttons */
+.itb-btn {
+    background: #075BA9; color: #fff; border: none;
+    height: 34px; padding: 0 14px; border-radius: 6px;
+    font-size: 13px; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: background .15s;
+}
+.itb-btn:hover { background: #054a8a; color: #fff; text-decoration: none; }
+
+.itb-btn-ghost {
+    background: transparent; color: #444; border: 1px solid #e6e6e6;
+    height: 34px; padding: 0 14px; border-radius: 6px;
+    font-size: 13px; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: background .15s;
+}
+.itb-btn-ghost:hover { background: #f5f6f8; color: #444; text-decoration: none; }
+
+.itb-btn-danger {
+    background: transparent; color: #dc2626; border: 1px solid #fecaca;
+    height: 34px; padding: 0 14px; border-radius: 6px;
+    font-size: 13px; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+.itb-btn-danger:hover { background: #fef2f2; }
+
+/* Table */
+.itb-table-wrap { background: #fff; border: 1px solid #e6e6e6; border-radius: 8px; overflow: hidden; }
+.itb-table      { width: 100%; border-collapse: collapse; font-size: 14px; }
+.itb-table thead tr { background: #f5f6f8; }
+.itb-table thead th { padding: 10px 16px; border-bottom: 1px solid #e6e6e6; }
+.itb-table tbody tr { border-bottom: 1px solid #e6e6e6; }
+.itb-table tbody tr:last-child { border-bottom: none; }
+.itb-table tbody tr:hover { background: #f9fafb; }
+.itb-table tbody td { padding: 12px 16px; vertical-align: middle; color: #444; }
+
+/* Card */
+.itb-card { background: #fff; border: 1px solid #e6e6e6; border-radius: 8px; padding: 20px; }
+.itb-section-label {
+    font-size: 11px; font-weight: 600; color: #999;
+    text-transform: uppercase; letter-spacing: .05em; margin-bottom: 14px;
+}
+
+/* Filter bar */
+.itb-filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+
+/* Stage chip */
+.itb-chip {
+    display: inline-flex; align-items: center;
+    padding: 2px 10px; border-radius: 4px;
+    font-size: 12px; font-weight: 500; white-space: nowrap;
+}
+
+/* Alerts */
+.itb-alert-s { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
+.itb-alert-e { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
+
+/* Empty state */
+.itb-empty { text-align: center; padding: 48px 24px; color: #999; font-size: 14px; }
+
+/* Form elements */
+.itb-form-label   { display: block; font-size: 13px; font-weight: 500; color: #444; margin-bottom: 5px; }
+.itb-form-control {
+    width: 100%; border: 1px solid #e6e6e6; border-radius: 6px;
+    height: 38px; padding: 0 10px;
+    font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif; color: #444; background: #fff;
+    box-sizing: border-box;
+}
+.itb-form-control:focus { outline: none; border-color: #075BA9; box-shadow: 0 0 0 3px rgba(7,91,169,.12); }
+.itb-textarea {
+    width: 100%; border: 1px solid #e6e6e6; border-radius: 6px;
+    padding: 8px 10px; font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #444; background: #fff; resize: vertical; box-sizing: border-box;
+}
+.itb-textarea:focus { outline: none; border-color: #075BA9; box-shadow: 0 0 0 3px rgba(7,91,169,.12); }
+
+/* Detail info rows */
+.itb-info-row   { display: flex; padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+.itb-info-label { color: #999; width: 45%; flex-shrink: 0; }
+.itb-info-value { color: #444; font-weight: 500; }
+
+/* Layout helpers */
+.itb-2col      { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.itb-stage-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+.itb-step      { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+.itb-action-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+
+/* Overlay */
+.itb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 1050; align-items: center; justify-content: center; }
+.itb-overlay.show { display: flex; }
