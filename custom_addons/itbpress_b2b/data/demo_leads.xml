@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ================================================================
+     LEAD 1 — Kaos Wisuda 2026
+     Mitra: PT Akademia Nusantara | Stage: Dirilis | Tipe: itb_press
+     Demo: HPP 3 entri, Penjualan 6 entri lintas saluran
+     ================================================================ -->
+<record id="lead_kaos_wisuda" model="crm.lead">
+    <field name="name">Kaos Wisuda 2026</field>
+    <field name="type">opportunity</field>
+    <field name="partner_id" ref="itbpress_b2b.partner_akademia"/>
+    <field name="stage_id" ref="itbpress_b2b.status_dirilis"/>
+    <field name="x_nama_pic">Ahmad Fauzi</field>
+    <field name="x_kontak_pic">081234567890</field>
+    <field name="x_tipe_produksi">itb_press</field>
+    <field name="x_jenis_produk">kaos</field>
+    <field name="x_sistem">limited_edition</field>
+    <field name="x_kuantitas_produksi">500</field>
+    <field name="x_rencana_harga_lisensi">25000</field>
+    <field name="x_harga_lisensi_confirmed">23000</field>
+    <field name="date_open">2026-01-10</field>
+    <field name="date_deadline">2026-03-31</field>
+    <field name="description">Produk dirilis tepat waktu sesuai jadwal wisuda ITB periode Maret 2026.</field>
+</record>
+
+<record id="hpp_kaos_1" model="x.hpp">
+    <field name="pengajuan_id" ref="lead_kaos_wisuda"/>
+    <field name="total_hpp">21500</field>
+    <field name="tanggal_entri">2026-01-15</field>
+    <field name="stempel_waktu">2026-01-15 08:00:00</field>
+</record>
+<record id="hpp_kaos_2" model="x.hpp">
+    <field name="pengajuan_id" ref="lead_kaos_wisuda"/>
+    <field name="total_hpp">22000</field>
+    <field name="tanggal_entri">2026-02-15</field>
+    <field name="stempel_waktu">2026-02-15 09:00:00</field>
+</record>
+<record id="hpp_kaos_3" model="x.hpp">
+    <field name="pengajuan_id" ref="lead_kaos_wisuda"/>
+    <field name="total_hpp">21800</field>
+    <field name="tanggal_entri">2026-03-01</field>
+    <field name="stempel_waktu">2026-03-01 10:00:00</field>
+</record>
+
+<record id="penj_kaos_1" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_kaos_wisuda"/>
+    <field name="saluran">toko_fisik</field>
+    <field name="tanggal">2026-03-10</field>
+    <field name="jumlah_terjual">120</field>
+    <field name="nilai_penjualan">10200000</field>
+</record>
+<record id="penj_kaos_2" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_kaos_wisuda"/>
+    <field name="saluran">website</field>
+    <field name="tanggal">2026-03-18</field>
+    <field name="jumlah_terjual">85</field>
+    <field name="nilai_penjualan">7225000</field>
+</record>
+<record id="penj_kaos_3" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_kaos_wisuda"/>
+    <field name="saluran">marketplace</field>
+    <field name="tanggal">2026-03-25</field>
+    <field name="jumlah_terjual">95</field>
+    <field name="nilai_penjualan">8075000</field>
+</record>
+<record id="penj_kaos_4" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_kaos_wisuda"/>
+    <field name="saluran">toko_fisik</field>
+    <field name="tanggal">2026-04-05</field>
+    <field name="jumlah_terjual">75</field>
+    <field name="nilai_penjualan">6375000</field>
+</record>
+<record id="penj_kaos_5" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_kaos_wisuda"/>
+    <field name="saluran">website</field>
+    <field name="tanggal">2026-04-22</field>
+    <field name="jumlah_terjual">55</field>
+    <field name="nilai_penjualan">4675000</field>
+</record>
+<record id="penj_kaos_6" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_kaos_wisuda"/>
+    <field name="saluran">marketplace</field>
+    <field name="tanggal">2026-05-03</field>
+    <field name="jumlah_terjual">40</field>
+    <field name="nilai_penjualan">3400000</field>
+</record>
+
+
+<!-- ================================================================
+     LEAD 2 — Totebag Annual Conference ITB 2026
+     Mitra: PT Akademia Nusantara | Stage: Dalam Produksi | Tipe: itb_press
+     Demo: HPP 2 entri, belum ada penjualan
+     ================================================================ -->
+<record id="lead_totebag_conference" model="crm.lead">
+    <field name="name">Totebag Annual Conference ITB 2026</field>
+    <field name="type">opportunity</field>
+    <field name="partner_id" ref="itbpress_b2b.partner_akademia"/>
+    <field name="stage_id" ref="itbpress_b2b.status_dalam_produksi"/>
+    <field name="x_nama_pic">Rina Kusumawati</field>
+    <field name="x_kontak_pic">082198765432</field>
+    <field name="x_tipe_produksi">itb_press</field>
+    <field name="x_jenis_produk">totebag</field>
+    <field name="x_sistem">limited_edition</field>
+    <field name="x_kuantitas_produksi">300</field>
+    <field name="x_rencana_harga_lisensi">35000</field>
+    <field name="x_harga_lisensi_confirmed">32000</field>
+    <field name="date_open">2026-03-01</field>
+    <field name="date_deadline">2026-06-15</field>
+    <field name="description">Target distribusi sebelum acara Annual Conference bulan Juni 2026.</field>
+</record>
+
+<record id="hpp_totebag_1" model="x.hpp">
+    <field name="pengajuan_id" ref="lead_totebag_conference"/>
+    <field name="total_hpp">29500</field>
+    <field name="tanggal_entri">2026-03-20</field>
+    <field name="stempel_waktu">2026-03-20 09:30:00</field>
+</record>
+<record id="hpp_totebag_2" model="x.hpp">
+    <field name="pengajuan_id" ref="lead_totebag_conference"/>
+    <field name="total_hpp">30200</field>
+    <field name="tanggal_entri">2026-04-25</field>
+    <field name="stempel_waktu">2026-04-25 10:15:00</field>
+</record>
+
+
+<!-- ================================================================
+     LEAD 3 — Jaket Komunitas Alumni Teknik 2026
+     Mitra: CV Gamma Persada | Stage: Negosiasi | Tipe: mandiri
+     Demo: menunjukkan alur sebelum konfirmasi harga
+     ================================================================ -->
+<record id="lead_jaket_alumni" model="crm.lead">
+    <field name="name">Jaket Komunitas Alumni Teknik 2026</field>
+    <field name="type">opportunity</field>
+    <field name="partner_id" ref="itbpress_b2b.partner_gamma"/>
+    <field name="stage_id" ref="itbpress_b2b.status_negosiasi"/>
+    <field name="x_nama_pic">Doni Prasetyo</field>
+    <field name="x_kontak_pic">087812345678</field>
+    <field name="x_tipe_produksi">mandiri</field>
+    <field name="x_jenis_produk">jaket</field>
+    <field name="x_sistem">bulanan</field>
+    <field name="x_kuantitas_produksi">200</field>
+    <field name="x_rencana_harga_lisensi">75000</field>
+    <field name="date_open">2026-04-10</field>
+    <field name="date_deadline">2026-07-31</field>
+    <field name="description">Klien meminta diskon untuk pemesanan di atas 150 pcs. Masih dalam pembahasan.</field>
+</record>
+
+
+<!-- ================================================================
+     LEAD 4 — Polo Shirt Orientasi Mahasiswa Baru 2026
+     Mitra: CV Gamma Persada | Stage: Diajukan | Tipe: mandiri
+     Demo: pengajuan baru yang belum ditindaklanjuti
+     ================================================================ -->
+<record id="lead_polo_orientasi" model="crm.lead">
+    <field name="name">Polo Shirt Orientasi Mahasiswa Baru 2026</field>
+    <field name="type">opportunity</field>
+    <field name="partner_id" ref="itbpress_b2b.partner_gamma"/>
+    <field name="stage_id" ref="itbpress_b2b.status_diajukan"/>
+    <field name="x_nama_pic">Wahyu Santosa</field>
+    <field name="x_kontak_pic">081387654321</field>
+    <field name="x_tipe_produksi">mandiri</field>
+    <field name="x_jenis_produk">polo_shirt</field>
+    <field name="x_sistem">limited_edition</field>
+    <field name="x_kuantitas_produksi">150</field>
+    <field name="x_rencana_harga_lisensi">55000</field>
+    <field name="date_open">2026-05-10</field>
+    <field name="date_deadline">2026-08-01</field>
+</record>
+
+
+<!-- ================================================================
+     LEAD 5 — Topi Souvenir Event Tahunan 2025
+     Mitra: PT Akademia Nusantara | Stage: Ditolak | Tipe: mandiri
+     Demo: kasus penolakan dengan catatan alasan
+     ================================================================ -->
+<record id="lead_topi_event" model="crm.lead">
+    <field name="name">Topi Souvenir Event Tahunan 2025</field>
+    <field name="type">opportunity</field>
+    <field name="partner_id" ref="itbpress_b2b.partner_akademia"/>
+    <field name="stage_id" ref="itbpress_b2b.status_ditolak"/>
+    <field name="x_nama_pic">Sari Dewi</field>
+    <field name="x_kontak_pic">085612309876</field>
+    <field name="x_tipe_produksi">mandiri</field>
+    <field name="x_jenis_produk">topi</field>
+    <field name="x_sistem">limited_edition</field>
+    <field name="x_kuantitas_produksi">400</field>
+    <field name="x_rencana_harga_lisensi">45000</field>
+    <field name="date_open">2025-10-05</field>
+    <field name="date_deadline">2025-12-31</field>
+    <field name="description">Ditolak: spesifikasi bahan tidak memenuhi standar produksi ITB Press. Klien disarankan mengajukan ulang dengan spesifikasi yang diperbarui.</field>
+</record>
+
+
+<!-- ================================================================
+     LEAD 6 — Agenda Tahunan Komunitas Gamma 2026
+     Mitra: CV Gamma Persada | Stage: Dirilis | Tipe: itb_press
+     Demo: HPP 2 entri, Penjualan 4 entri lintas saluran
+     ================================================================ -->
+<record id="lead_agenda_tahunan" model="crm.lead">
+    <field name="name">Agenda Tahunan Komunitas Gamma 2026</field>
+    <field name="type">opportunity</field>
+    <field name="partner_id" ref="itbpress_b2b.partner_gamma"/>
+    <field name="stage_id" ref="itbpress_b2b.status_dirilis"/>
+    <field name="x_nama_pic">Lestari Putri</field>
+    <field name="x_kontak_pic">089654321098</field>
+    <field name="x_tipe_produksi">itb_press</field>
+    <field name="x_jenis_produk">agenda</field>
+    <field name="x_sistem">tahunan</field>
+    <field name="x_kuantitas_produksi">1000</field>
+    <field name="x_rencana_harga_lisensi">85000</field>
+    <field name="x_harga_lisensi_confirmed">80000</field>
+    <field name="date_open">2025-11-01</field>
+    <field name="date_deadline">2026-02-28</field>
+    <field name="description">Agenda resmi komunitas Gamma untuk distribusi awal tahun 2026.</field>
+</record>
+
+<record id="hpp_agenda_1" model="x.hpp">
+    <field name="pengajuan_id" ref="lead_agenda_tahunan"/>
+    <field name="total_hpp">72000</field>
+    <field name="tanggal_entri">2025-11-20</field>
+    <field name="stempel_waktu">2025-11-20 08:00:00</field>
+</record>
+<record id="hpp_agenda_2" model="x.hpp">
+    <field name="pengajuan_id" ref="lead_agenda_tahunan"/>
+    <field name="total_hpp">74500</field>
+    <field name="tanggal_entri">2026-01-10</field>
+    <field name="stempel_waktu">2026-01-10 09:00:00</field>
+</record>
+
+<record id="penj_agenda_1" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_agenda_tahunan"/>
+    <field name="saluran">website</field>
+    <field name="tanggal">2026-01-15</field>
+    <field name="jumlah_terjual">200</field>
+    <field name="nilai_penjualan">30000000</field>
+</record>
+<record id="penj_agenda_2" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_agenda_tahunan"/>
+    <field name="saluran">marketplace</field>
+    <field name="tanggal">2026-02-01</field>
+    <field name="jumlah_terjual">350</field>
+    <field name="nilai_penjualan">52500000</field>
+</record>
+<record id="penj_agenda_3" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_agenda_tahunan"/>
+    <field name="saluran">toko_fisik</field>
+    <field name="tanggal">2026-02-20</field>
+    <field name="jumlah_terjual">280</field>
+    <field name="nilai_penjualan">42000000</field>
+</record>
+<record id="penj_agenda_4" model="x.data.penjualan">
+    <field name="pengajuan_id" ref="lead_agenda_tahunan"/>
+    <field name="saluran">mobile_store</field>
+    <field name="tanggal">2026-03-10</field>
+    <field name="jumlah_terjual">100</field>
+    <field name="nilai_penjualan">15000000</field>
+</record>
+
+</odoo>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Remove CRM built-in demo leads (office design, furniture quotes, etc.)
+         that ship with the crm module. Only B2B leads (x_tipe_produksi set) are kept. -->
+    <function model="crm.lead" name="_cleanup_builtin_demo"/>
+</odoo>

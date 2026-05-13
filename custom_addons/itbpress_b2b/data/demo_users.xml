@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Internal users — auto-partner creation is fine -->
+
+    <record id="user_staf_marketing" model="res.users">
+        <field name="name">Budi Santoso</field>
+        <field name="login">marketing@itbpress.id</field>
+        <field name="password">itbpress123</field>
+        <field name="groups_id" eval="[(4, ref('itbpress_b2b.group_staf_marketing'))]"/>
+    </record>
+
+    <record id="user_direktur" model="res.users">
+        <field name="name">Siti Rahayu</field>
+        <field name="login">direktur@itbpress.id</field>
+        <field name="password">itbpress123</field>
+        <field name="groups_id" eval="[(4, ref('itbpress_b2b.group_direktur'))]"/>
+    </record>
+
+    <!-- Mitra partners — explicit records so demo_leads.xml can reference them -->
+
+    <record id="partner_akademia" model="res.partner">
+        <field name="name">PT Akademia Nusantara</field>
+        <field name="email">mitra1@akademia.id</field>
+        <field name="is_company" eval="True"/>
+    </record>
+
+    <record id="partner_gamma" model="res.partner">
+        <field name="name">CV Gamma Persada</field>
+        <field name="email">mitra2@gamma.id</field>
+        <field name="is_company" eval="True"/>
+    </record>
+
+    <!-- Portal users linked to the explicit partners above -->
+
+    <record id="user_mitra_1" model="res.users">
+        <field name="partner_id" ref="partner_akademia"/>
+        <field name="login">mitra1@akademia.id</field>
+        <field name="password">mitra123</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_portal')])]"/>
+    </record>
+
+    <record id="user_mitra_2" model="res.users">
+        <field name="partner_id" ref="partner_gamma"/>
+        <field name="login">mitra2@gamma.id</field>
+        <field name="password">mitra123</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_portal')])]"/>
+    </record>
+</odoo>
