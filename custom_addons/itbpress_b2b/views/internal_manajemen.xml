@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ============================================================ -->
+<!--  6.1 Manajemen B2B — List                                    -->
+<!-- ============================================================ -->
+<template id="internal_manajemen" name="Manajemen B2B">
+    <t t-call="itbpress_b2b.internal_base_layout">
+        <header class="itb-topbar">
+            <h1 style="font-size:16px;font-weight:600;margin:0;">Manajemen B2B</h1>
+            <span style="margin-left:auto;font-size:12px;color:#999;" t-out="user_role"/>
+        </header>
+        <main class="itb-content">
+            <t t-if="flash_success">
+                <div class="itb-alert-s"><t t-out="flash_success"/></div>
+            </t>
+
+            <form method="GET" action="/manajemen" class="itb-filter-bar">
+                <input type="text" name="search" class="itb-input"
+                       style="width:240px;" placeholder="Cari produk atau mitra..."
+                       t-att-value="search"/>
+                <select name="stage_filter" class="itb-select" style="width:180px;">
+                    <option value="">Semua Stage</option>
+                    <option value="Diajukan"       t-att-selected="stage_filter == 'Diajukan'">Diajukan</option>
+                    <option value="Negosiasi"      t-att-selected="stage_filter == 'Negosiasi'">Negosiasi</option>
+                    <option value="Dalam Produksi" t-att-selected="stage_filter == 'Dalam Produksi'">Dalam Produksi</option>
+                    <option value="Dirilis"        t-att-selected="stage_filter == 'Dirilis'">Dirilis</option>
+                    <option value="Ditolak"        t-att-selected="stage_filter == 'Ditolak'">Ditolak</option>
+                </select>
+                <button type="submit" class="itb-btn">Cari</button>
+                <span style="margin-left:auto;font-size:12px;color:#999;"><t t-out="len(leads)"/> pengajuan</span>
+            </form>
+
+            <t t-if="not leads">
+                <div class="itb-empty">Belum ada pengajuan B2B.</div>
+            </t>
+            <t t-else="">
+                <div class="itb-table-wrap">
+                    <table class="itb-table">
+                        <thead>
+                            <tr>
+                                <th class="itb-th">Nama Produk</th>
+                                <th class="itb-th">Mitra</th>
+                                <th class="itb-th">Jenis</th>
+                                <th class="itb-th">Kuantitas</th>
+                                <th class="itb-th">Rencana Harga Lisensi</th>
+                                <th class="itb-th">Harga Lisensi</th>
+                                <th class="itb-th">Stage</th>
+                                <th class="itb-th">Tanggal</th>
+                                <th class="itb-th"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="leads" t-as="lead">
+                                <tr>
+                                    <td style="font-weight:500;"><t t-out="lead.name"/></td>
+                                    <td><t t-out="lead.partner_id.name or '-'"/></td>
+                                    <td><t t-out="lead.x_jenis_produk or '-'"/></td>
+                                    <td><t t-out="lead.x_kuantitas_produksi"/> pcs</td>
+                                    <td>Rp <t t-out="'{:,.0f}'.format(lead.x_rencana_harga_lisensi)"/></td>
+                                    <td>
+                                        <t t-if="lead.stage_id.name in ['Dalam Produksi','Dirilis']">
+                                            Rp <t t-out="'{:,.0f}'.format(lead.x_harga_lisensi_confirmed)"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                    <td>
+                                        <span class="itb-chip"
+                                              t-att-style="stage_style.get(lead.stage_id.name, stage_style['Diajukan'])">
+                                            <t t-out="lead.stage_id.name"/>
+                                        </span>
+                                    </td>
+                                    <td style="color:#999;">
+                                        <t t-if="lead.date_open">
+                                            <t t-out="lead.date_open.strftime('%d %b %Y')"/>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <a t-attf-href="/manajemen/#{lead.id}" class="itb-btn-ghost">Detail</a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </main>
+    </t>
+
+</template>
+
+<!-- ============================================================ -->
+<!--  6.1 Manajemen B2B — Detail                                  -->
+<!-- ============================================================ -->
+<template id="internal_manajemen_detail" name="Detail Manajemen B2B">
+    <t t-call="itbpress_b2b.internal_base_layout">
+        <header class="itb-topbar">
+            <a href="/manajemen" class="itb-btn-ghost">&#8592; Kembali</a>
+            <h1 style="font-size:16px;font-weight:600;margin:0;"><t t-out="lead.name"/></h1>
+            <span style="margin-left:auto;font-size:12px;color:#999;" t-out="user_role"/>
+        </header>
+        <main class="itb-content">
+            <t t-if="flash_success">
+                <div class="itb-alert-s"><t t-out="flash_success"/></div>
+            </t>
+
+            <!-- Stage bar -->
+            <div class="itb-stage-bar">
+                <t t-set="stages_ordered" t-value="['Diajukan','Negosiasi','Dalam Produksi','Dirilis']"/>
+                <t t-set="cur" t-value="lead.stage_id.name"/>
+                <t t-set="is_ditolak" t-value="cur == 'Ditolak'"/>
+                <t t-foreach="stages_ordered" t-as="sn">
+                    <t t-set="idx_cur" t-value="stages_ordered.index(cur) if cur in stages_ordered else -1"/>
+                    <t t-set="idx_sn"  t-value="stages_ordered.index(sn)"/>
+                    <t t-set="is_done" t-value="not is_ditolak and idx_cur > idx_sn"/>
+                    <t t-set="is_cur"  t-value="not is_ditolak and cur == sn"/>
+                    <t t-set="step_bg"
+                       t-value="'background:#f0fdf4;color:#16a34a;' if is_done else ('background:#075BA9;color:#fff;' if is_cur else 'background:#f5f6f8;color:#999;border:1px solid #e6e6e6;')"/>
+                    <span class="itb-step" t-att-style="step_bg">
+                        <t t-if="is_done">&#10003; </t>
+                        <t t-out="sn"/>
+                    </span>
+                </t>
+                <t t-if="is_ditolak">
+                    <span class="itb-step" style="background:#fef2f2;color:#dc2626;">Ditolak</span>
+                </t>
+            </div>
+
+            <!-- Stage action buttons (marketing only) -->
+            <t t-if="is_marketing">
+                <div class="itb-action-bar">
+                    <t t-set="cur" t-value="lead.stage_id.name"/>
+                    <t t-if="cur == 'Diajukan'">
+                        <form method="POST" t-attf-action="/manajemen/#{lead.id}/ubah-stage" style="display:inline;">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="stage_name" value="Negosiasi"/>
+                            <button type="submit" class="itb-btn">Pindah ke Negosiasi</button>
+                        </form>
+                        <form method="POST" t-attf-action="/manajemen/#{lead.id}/ubah-stage" style="display:inline;">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="stage_name" value="Ditolak"/>
+                            <button type="submit" class="itb-btn-danger">Tolak</button>
+                        </form>
+                    </t>
+                    <t t-elif="cur == 'Negosiasi'">
+                        <button type="button" class="itb-btn"
+                                t-att-onclick="'openHargaModal(' + str(lead.id) + ',' + str(lead.x_rencana_harga_lisensi) + ')'">
+                            Pindah ke Dalam Produksi
+                        </button>
+                        <form method="POST" t-attf-action="/manajemen/#{lead.id}/ubah-stage" style="display:inline;">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="stage_name" value="Ditolak"/>
+                            <button type="submit" class="itb-btn-danger">Tolak</button>
+                        </form>
+                    </t>
+                    <t t-elif="cur == 'Dalam Produksi'">
+                        <form method="POST" t-attf-action="/manajemen/#{lead.id}/ubah-stage" style="display:inline;">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="stage_name" value="Dirilis"/>
+                            <button type="submit" class="itb-btn">Pindah ke Dirilis</button>
+                        </form>
+                    </t>
+                </div>
+            </t>
+
+            <!-- Info grid -->
+            <div class="itb-2col">
+                <div class="itb-card">
+                    <div class="itb-section-label">Informasi Pengajuan</div>
+                    <div class="itb-info-row"><span class="itb-info-label">Nama Produk</span><span class="itb-info-value" t-out="lead.name"/></div>
+                    <div class="itb-info-row"><span class="itb-info-label">Mitra</span><span class="itb-info-value" t-out="lead.partner_id.name or '-'"/></div>
+                    <div class="itb-info-row"><span class="itb-info-label">Nama PIC</span><span class="itb-info-value" t-out="lead.x_nama_pic or '-'"/></div>
+                    <div class="itb-info-row"><span class="itb-info-label">Kontak PIC</span><span class="itb-info-value" t-out="lead.x_kontak_pic or '-'"/></div>
+                    <div class="itb-info-row"><span class="itb-info-label">Tipe Produksi</span><span class="itb-info-value"><t t-out="'Produksi ITB Press' if lead.x_tipe_produksi == 'itb_press' else 'Produksi Mandiri'"/></span></div>
+                    <div class="itb-info-row"><span class="itb-info-label">Jenis Produk</span><span class="itb-info-value" t-out="jenis_label.get(lead.x_jenis_produk, '-')"/></div>
+                    <div class="itb-info-row"><span class="itb-info-label">Sistem</span><span class="itb-info-value" t-out="sistem_label.get(lead.x_sistem, '-')"/></div>
+                    <div class="itb-info-row"><span class="itb-info-label">Kuantitas</span><span class="itb-info-value"><t t-out="lead.x_kuantitas_produksi"/> pcs</span></div>
+                    <div class="itb-info-row"><span class="itb-info-label">Rencana Harga Lisensi</span><span class="itb-info-value">Rp <t t-out="'{:,.0f}'.format(lead.x_rencana_harga_lisensi)"/>/unit</span></div>
+                    <t t-if="lead.stage_id.name in ['Dalam Produksi','Dirilis']">
+                        <div class="itb-info-row"><span class="itb-info-label">Harga Lisensi Disepakati</span><span class="itb-info-value" style="color:#075BA9;font-weight:600;">Rp <t t-out="'{:,.0f}'.format(lead.x_harga_lisensi_confirmed)"/>/unit</span></div>
+                    </t>
+                    <div class="itb-info-row"><span class="itb-info-label">Tanggal Pengajuan</span><span class="itb-info-value" t-out="lead.date_open.strftime('%d %b %Y') if lead.date_open else '-'"/></div>
+                    <div class="itb-info-row"><span class="itb-info-label">Target Waktu</span><span class="itb-info-value" t-out="lead.date_deadline.strftime('%d %b %Y') if lead.date_deadline else '-'"/></div>
+                    <t t-if="lead.description">
+                        <div style="padding:8px 0;font-size:13px;">
+                            <div style="color:#999;margin-bottom:4px;">Catatan</div>
+                            <div t-out="lead.description"/>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Edit form (marketing only) -->
+                <t t-if="is_marketing">
+                    <div class="itb-card">
+                        <div class="itb-section-label">Edit Pengajuan</div>
+                        <form method="POST" t-attf-action="/manajemen/#{lead.id}/edit">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div style="margin-bottom:12px;">
+                                <label class="itb-form-label">Nama Produk</label>
+                                <input type="text" name="nama_produk" class="itb-form-control" t-att-value="lead.name"/>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                                <div>
+                                    <label class="itb-form-label">Nama PIC</label>
+                                    <input type="text" name="nama_pic" class="itb-form-control" t-att-value="lead.x_nama_pic or ''"/>
+                                </div>
+                                <div>
+                                    <label class="itb-form-label">Kontak PIC</label>
+                                    <input type="text" name="kontak_pic" class="itb-form-control" t-att-value="lead.x_kontak_pic or ''"/>
+                                </div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                                <div>
+                                    <label class="itb-form-label">Kuantitas (pcs)</label>
+                                    <input type="number" name="kuantitas_produksi" class="itb-form-control" t-att-value="lead.x_kuantitas_produksi"/>
+                                </div>
+                                <div>
+                                    <label class="itb-form-label">Rencana Harga Lisensi (Rp)</label>
+                                    <input type="number" name="rencana_harga_lisensi" class="itb-form-control" t-att-value="lead.x_rencana_harga_lisensi"/>
+                                </div>
+                            </div>
+                            <div style="margin-bottom:16px;">
+                                <label class="itb-form-label">Catatan</label>
+                                <textarea name="catatan" class="itb-textarea" rows="3"><t t-out="lead.description or ''"/></textarea>
+                            </div>
+                            <button type="submit" class="itb-btn">Simpan</button>
+                        </form>
+                    </div>
+                </t>
+            </div>
+
+            <!-- Histori HPP (itb_press only) -->
+            <t t-if="lead.x_tipe_produksi == 'itb_press'">
+                <div class="itb-card" style="margin-bottom:20px;">
+                    <div class="itb-section-label">Histori HPP</div>
+                    <t t-if="not hpp_records">
+                        <div class="itb-empty" style="padding:24px;">Belum ada data HPP.</div>
+                    </t>
+                    <t t-else="">
+                        <canvas id="chartHpp" style="max-height:180px;margin-bottom:20px;"/>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"/>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                fetch('/manajemen/chart/hpp/<t t-out="lead.id"/>')
+                                    .then(function (r) { return r.json(); })
+                                    .then(function (data) {
+                                        new Chart(document.getElementById('chartHpp').getContext('2d'), {
+                                            type: 'line',
+                                            data: {
+                                                labels: data.map(function (d) { return d.tanggal; }),
+                                                datasets: [{ label: 'HPP per Unit (Rp)', data: data.map(function (d) { return d.hpp; }), borderColor: '#075BA9', fill: false }]
+                                            },
+                                            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+                                        });
+                                    });
+                            });
+                        </script>
+                        <div class="itb-table-wrap">
+                            <table class="itb-table">
+                                <thead>
+                                    <tr>
+                                        <th class="itb-th">Tanggal</th>
+                                        <th class="itb-th">HPP per Unit (Rp)</th>
+                                        <th class="itb-th">Stempel Waktu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="hpp_records" t-as="hpp">
+                                        <tr>
+                                            <td><t t-out="hpp.tanggal_entri"/></td>
+                                            <td>Rp <t t-out="'{:,.0f}'.format(hpp.total_hpp)"/></td>
+                                            <td style="color:#999;font-size:12px;"><t t-out="hpp.stempel_waktu"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+
+            <!-- Data Penjualan (dirilis only) -->
+            <t t-if="lead.x_tab_penjualan_aktif">
+                <div class="itb-card" style="margin-bottom:20px;">
+                    <div class="itb-section-label">Data Penjualan</div>
+                    <t t-if="not penjualan_records">
+                        <div class="itb-empty" style="padding:24px;">Belum ada entri penjualan.</div>
+                    </t>
+                    <t t-else="">
+                        <div class="itb-table-wrap">
+                            <table class="itb-table">
+                                <thead>
+                                    <tr>
+                                        <th class="itb-th">Tanggal</th>
+                                        <th class="itb-th">Saluran</th>
+                                        <th class="itb-th">Jumlah (pcs)</th>
+                                        <th class="itb-th">Nilai (Rp)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="penjualan_records" t-as="p">
+                                        <tr>
+                                            <td><t t-out="p.tanggal"/></td>
+                                            <td><t t-out="saluran_label.get(p.saluran, p.saluran)"/></td>
+                                            <td><t t-out="p.jumlah_terjual"/></td>
+                                            <td>Rp <t t-out="'{:,.0f}'.format(p.nilai_penjualan)"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </main>
+    </t>
+
+    <!-- Modal harga lisensi dari detail -->
+    <div id="modalHarga" class="itb-overlay">
+        <div style="background:#fff;border-radius:8px;padding:24px;width:100%;max-width:420px;">
+            <div style="font-size:15px;font-weight:600;margin-bottom:16px;">Konfirmasi Harga Lisensi</div>
+            <form method="POST" id="formHarga">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="stage_name" value="Dalam Produksi"/>
+                <div style="margin-bottom:16px;">
+                    <label class="itb-form-label">Harga Lisensi Disepakati (Rp/unit)</label>
+                    <input type="number" name="harga_lisensi" id="inputHargaDetail"
+                           class="itb-form-control" min="0" step="1" required="required"/>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button type="submit" class="itb-btn">Konfirmasi</button>
+                    <button type="button" class="itb-btn-ghost"
+                            onclick="document.getElementById('modalHarga').classList.remove('show')">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        function openHargaModal(leadId, harga) {
+            document.getElementById('formHarga').action = '/manajemen/' + leadId + '/ubah-stage';
+            document.getElementById('inputHargaDetail').value = harga;
+            document.getElementById('modalHarga').classList.add('show');
+        }
+        document.getElementById('modalHarga').addEventListener('click', function (e) {
+            if (e.target === this) this.classList.remove('show');
+        });
+    </script>
+</template>
+
+</odoo>
