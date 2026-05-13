@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- URL actions for custom internal routes -->
+    <record id="action_url_manajemen" model="ir.actions.act_url">
+        <field name="name">Manajemen B2B</field>
+        <field name="url">/manajemen</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_url_laporan" model="ir.actions.act_url">
+        <field name="name">Laporan Penjualan</field>
+        <field name="url">/laporan</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_url_hpp" model="ir.actions.act_url">
+        <field name="name">Historis HPP</field>
+        <field name="url">/hpp</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- Root menu -->
+    <menuitem
+        id="menu_itbpress_b2b_root"
+        name="ITB Press B2B"
+        sequence="50"
+        web_icon="itbpress_b2b,static/description/icon.png"/>
+
+    <!-- Manajemen B2B -->
+    <menuitem
+        id="menu_manajemen_b2b"
+        name="Manajemen B2B"
+        parent="menu_itbpress_b2b_root"
+        action="action_url_manajemen"
+        sequence="10"
+        groups="itbpress_b2b.group_staf_marketing,itbpress_b2b.group_direktur"/>
+
+    <!-- Laporan Penjualan -->
+    <menuitem
+        id="menu_laporan_penjualan"
+        name="Laporan Penjualan"
+        parent="menu_itbpress_b2b_root"
+        action="action_url_laporan"
+        sequence="20"
+        groups="itbpress_b2b.group_staf_marketing,itbpress_b2b.group_direktur"/>
+
+    <!-- Historis HPP -->
+    <menuitem
+        id="menu_historis_hpp"
+        name="Historis HPP"
+        parent="menu_itbpress_b2b_root"
+        action="action_url_hpp"
+        sequence="30"
+        groups="itbpress_b2b.group_staf_marketing,itbpress_b2b.group_direktur"/>
+</odoo>

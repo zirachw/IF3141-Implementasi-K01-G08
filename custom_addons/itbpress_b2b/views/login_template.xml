@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="itbpress_login_layout" inherit_id="web.login_layout"
+          name="ITB Press Login Layout" priority="30">
+    <xpath expr="t" position="replace">
+        <t t-call="website.layout">
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="no_footer" t-value="True"/>
+            <t t-set="head">
+                <link rel="preconnect" href="https://fonts.googleapis.com"/>
+                <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+            </t>
+            <div class="itb-login-wrap">
+                <!-- Left branding panel -->
+                <div class="itb-login-left">
+                    <img src="/itbpress_b2b/static/src/img/logo.png" alt="ITB Press" class="itb-login-left-logo"/>
+                    <div class="itb-login-left-title">ITB Press</div>
+                    <div class="itb-login-left-sub">B2B Collaboration Portal</div>
+                    <div class="itb-login-left-desc">
+                        Platform manajemen kolaborasi produk antara ITB Press dan mitra bisnis.
+                    </div>
+                </div>
+                <!-- Right form panel -->
+                <div class="itb-login-right">
+                    <div class="itb-login-card">
+                        <div style="margin-bottom:24px;">
+                            <div style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:4px;">Masuk</div>
+                            <div style="font-size:13px;color:#999;">Gunakan akun yang telah diberikan</div>
+                        </div>
+                        <t t-out="0"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </xpath>
+</template>
+
+</odoo>

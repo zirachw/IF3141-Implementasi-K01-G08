@@ -1,0 +1,139 @@
+/* Login page — split-screen layout */
+
+.itb-login-wrap {
+    min-height: 100vh;
+    display: flex;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Left branding panel */
+.itb-login-left {
+    width: 420px;
+    min-width: 420px;
+    background: #054a8a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 56px 48px;
+    position: relative;
+    overflow: hidden;
+}
+
+.itb-login-left::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    top: -80px;
+    right: -80px;
+}
+
+.itb-login-left::after {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    bottom: -40px;
+    left: -40px;
+}
+
+.itb-login-left-logo {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #fff;
+    padding: 6px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.itb-login-left-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.itb-login-left-sub {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,.65);
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 1;
+}
+
+.itb-login-left-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,.45);
+    line-height: 1.7;
+    max-width: 280px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Right form panel */
+.itb-login-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f6f8;
+    padding: 48px;
+}
+
+.itb-login-card {
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,.06);
+    width: 100%;
+    max-width: 380px;
+    padding: 32px;
+}
+
+/* Form elements */
+.itb-login-card label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
+}
+
+.itb-login-card .form-control {
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    color: #444;
+}
+
+.itb-login-card .form-control:focus {
+    border-color: #075BA9;
+    box-shadow: 0 0 0 3px rgba(7,91,169,.12);
+}
+
+.itb-login-card .btn-primary {
+    background-color: #075BA9 !important;
+    border-color: #075BA9 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+.itb-login-card .btn-primary:hover,
+.itb-login-card .btn-primary:focus {
+    background-color: #054a8a !important;
+    border-color: #054a8a !important;
+}
+
+.itb-login-card a { color: #075BA9; font-size: 13px; }
+.itb-login-card a:hover { color: #054a8a; }
