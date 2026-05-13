@@ -11,15 +11,7 @@ services:
       - ./config:/etc/odoo
       - ./custom_addons:/mnt/extras-addons
       - odoo-web-data:/var/lib/odoo
-    command: >
-      odoo 
-      --db_host=db 
-      --db_port=5432 
-      --db_user=odoo 
-      --db_password=password 
-      -i base
-      --load-language=en_US
-      --without-demo=all
+    command: odoo -i itbpress_b2b --load-language=en_US
 
   db:
     image: postgres:16-alpine
