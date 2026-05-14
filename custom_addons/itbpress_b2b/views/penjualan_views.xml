@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List view: Laporan Penjualan -->
+    <record id="view_penjualan_list" model="ir.ui.view">
+        <field name="name">x.data.penjualan.list</field>
+        <field name="model">x.data.penjualan</field>
+        <field name="arch" type="xml">
+            <tree string="Laporan Penjualan">
+                <field name="partner_id" string="Mitra"/>
+                <field name="pengajuan_id" string="Produk"/>
+                <field name="tanggal"/>
+                <field name="saluran" string="Saluran"/>
+                <field name="jumlah_terjual" string="Jumlah (pcs)" sum="Total pcs"/>
+                <field name="nilai_penjualan" string="Nilai (Rp)" sum="Total Nilai" widget="monetary"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view: tambah entri penjualan -->
+    <record id="view_penjualan_form" model="ir.ui.view">
+        <field name="name">x.data.penjualan.form</field>
+        <field name="model">x.data.penjualan</field>
+        <field name="arch" type="xml">
+            <form string="Entri Penjualan">
+                <sheet>
+                    <group>
+                        <field name="pengajuan_id" string="Produk / Pengajuan"/>
+                        <field name="partner_id" string="Mitra" readonly="1"/>
+                        <field name="saluran" string="Saluran Distribusi"/>
+                        <field name="tanggal" string="Tanggal"/>
+                        <field name="jumlah_terjual" string="Jumlah Terjual (pcs)"/>
+                        <field name="nilai_penjualan" string="Nilai Penjualan (Rp)" widget="monetary"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Graph view -->
+    <record id="view_penjualan_graph" model="ir.ui.view">
+        <field name="name">x.data.penjualan.graph</field>
+        <field name="model">x.data.penjualan</field>
+        <field name="arch" type="xml">
+            <graph string="Tren Penjualan" type="bar">
+                <field name="tanggal" type="row" interval="month"/>
+                <field name="nilai_penjualan" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Pivot view -->
+    <record id="view_penjualan_pivot" model="ir.ui.view">
+        <field name="name">x.data.penjualan.pivot</field>
+        <field name="model">x.data.penjualan</field>
+        <field name="arch" type="xml">
+            <pivot string="Pivot Penjualan">
+                <field name="partner_id" type="row"/>
+                <field name="saluran" type="col"/>
+                <field name="nilai_penjualan" type="measure"/>
+                <field name="jumlah_terjual" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_penjualan_search" model="ir.ui.view">
+        <field name="name">x.data.penjualan.search</field>
+        <field name="model">x.data.penjualan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id" string="Mitra"/>
+                <field name="pengajuan_id" string="Produk"/>
+                <field name="saluran"/>
+                <filter name="this_month" string="Bulan Ini"
+                        domain="[('tanggal', '&gt;=', context_today().replace(day=1).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group expand="1" string="Kelompokkan">
+                    <filter name="group_mitra" string="Mitra" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_produk" string="Produk" context="{'group_by': 'pengajuan_id'}"/>
+                    <filter name="group_saluran" string="Saluran" context="{'group_by': 'saluran'}"/>
+                    <filter name="group_bulan" string="Bulan" context="{'group_by': 'tanggal:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_laporan_penjualan" model="ir.actions.act_window">
+        <field name="name">Laporan Penjualan</field>
+        <field name="res_model">x.data.penjualan</field>
+        <field name="view_mode">tree,graph,pivot,form</field>
+        <field name="search_view_id" ref="view_penjualan_search"/>
+        <field name="context">{'group_by': ['partner_id']}</field>
+    </record>
+</odoo>
