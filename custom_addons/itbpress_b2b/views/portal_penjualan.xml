@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ============================================================ -->
+<!--  F-04: Penjualan — overview                                   -->
+<!-- ============================================================ -->
+<template id="portal_penjualan" name="Penjualan">
+    <t t-call="itbpress_b2b.portal_base_layout">
+        <header class="b2b-topbar">
+            <h1>Penjualan</h1>
+        </header>
+        <main class="b2b-content">
+            <t t-if="not has_dirilis">
+                <div class="b2b-empty">
+                    <t t-if="not has_any_leads">
+                        Tidak ada produk yang telah dirilis.
+                        <p>Buat pengajuan terlebih dahulu di tab Pengajuan.</p>
+                    </t>
+                    <t t-else="">
+                        Belum ada produk yang dirilis.
+                        <p>Pantau status pengajuan Anda di tab Produk Saya.</p>
+                    </t>
+                </div>
+            </t>
+            <t t-else="">
+                <t t-call="itbpress_b2b.portal_filter_bar">
+                    <t t-set="filter_action">/kolaborasi/penjualan</t>
+                </t>
+
+                <div class="b2b-charts-grid">
+                    <div class="b2b-chart-card">
+                        <p class="b2b-chart-label">Tren Penjualan</p>
+                        <canvas id="chartTren" style="width:100%;max-height:180px;"/>
+                    </div>
+                    <div class="b2b-chart-card">
+                        <p class="b2b-chart-label">Per Saluran Distribusi</p>
+                        <canvas id="chartSaluran" style="width:100%;max-height:180px;"/>
+                    </div>
+                </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"/>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var df = '<t t-out="date_from"/>', dt = '<t t-out="date_to"/>';
+                        var p = '?date_from=' + df + '&amp;date_to=' + dt;
+                        fetch('/kolaborasi/chart/tren' + p).then(function(r){return r.json();}).then(function(data){
+                            new Chart(document.getElementById('chartTren').getContext('2d'), {
+                                type: 'line',
+                                data: { labels: data.map(function(d){return d.bulan;}), datasets: [{ label: 'Total Penjualan (Rp)', data: data.map(function(d){return d.total;}), borderColor: '#075BA9', fill: false }] },
+                                options: { responsive: true, plugins: { legend: { display: false } } }
+                            });
+                        });
+                        fetch('/kolaborasi/chart/saluran' + p).then(function(r){return r.json();}).then(function(data){
+                            new Chart(document.getElementById('chartSaluran').getContext('2d'), {
+                                type: 'bar',
+                                data: { labels: data.map(function(d){return d.saluran;}), datasets: [{ data: data.map(function(d){return d.total;}), backgroundColor: '#075BA9' }] },
+                                options: { responsive: true, plugins: { legend: { display: false } } }
+                            });
+                        });
+                    });
+                </script>
+
+                <div class="b2b-form-card">
+                    <p class="b2b-section-label">Daftar Produk Dirilis</p>
+                    <div class="b2b-table-wrap">
+                        <table class="b2b-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama Produk</th>
+                                    <th>Total Terjual (pcs)</th>
+                                    <th>Total Nilai (Rp)</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="product_stats" t-as="ps">
+                                    <tr>
+                                        <td><t t-out="ps['lead'].name"/></td>
+                                        <td><t t-out="ps['total_terjual']"/> pcs</td>
+                                        <td>Rp <t t-out="'{:,.0f}'.format(ps['total_nilai'])"/></td>
+                                        <td>
+                                            <a t-attf-href="/kolaborasi/penjualan/#{ps['lead'].id}?date_from=#{date_from}&amp;date_to=#{date_to}"
+                                               class="btn-b2b-ghost">Detail</a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </main>
+    </t>
+</template>
+
+<!-- ============================================================ -->
+<!--  F-04: Detail Penjualan per Produk                            -->
+<!-- ============================================================ -->
+<template id="portal_penjualan_detail" name="Detail Penjualan">
+    <t t-call="itbpress_b2b.portal_base_layout">
+        <header class="b2b-topbar">
+            <a href="/kolaborasi/penjualan" class="btn-b2b-ghost">&#8592; Kembali</a>
+            <h1><t t-out="lead.name"/></h1>
+        </header>
+        <main class="b2b-content">
+            <t t-call="itbpress_b2b.portal_filter_bar">
+                <t t-set="filter_action">/kolaborasi/penjualan/<t t-out="lead.id"/></t>
+            </t>
+
+            <div class="b2b-charts-grid">
+                <div class="b2b-chart-card">
+                    <p class="b2b-chart-label">Tren Penjualan</p>
+                    <canvas id="chartTren" style="width:100%;max-height:180px;"/>
+                </div>
+                <div class="b2b-chart-card">
+                    <p class="b2b-chart-label">Per Saluran Distribusi</p>
+                    <canvas id="chartSaluran" style="width:100%;max-height:180px;"/>
+                </div>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"/>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var lid = '<t t-out="lead.id"/>', df = '<t t-out="date_from"/>', dt = '<t t-out="date_to"/>';
+                    var p = '?lead_id=' + lid + '&amp;date_from=' + df + '&amp;date_to=' + dt;
+                    fetch('/kolaborasi/chart/tren' + p).then(function(r){return r.json();}).then(function(data){
+                        new Chart(document.getElementById('chartTren').getContext('2d'), {
+                            type: 'line',
+                            data: { labels: data.map(function(d){return d.bulan;}), datasets: [{ label: 'Total Penjualan (Rp)', data: data.map(function(d){return d.total;}), borderColor: '#075BA9', fill: false }] },
+                            options: { responsive: true, plugins: { legend: { display: false } } }
+                        });
+                    });
+                    fetch('/kolaborasi/chart/saluran' + p).then(function(r){return r.json();}).then(function(data){
+                        new Chart(document.getElementById('chartSaluran').getContext('2d'), {
+                            type: 'bar',
+                            data: { labels: data.map(function(d){return d.saluran;}), datasets: [{ data: data.map(function(d){return d.total;}), backgroundColor: '#075BA9' }] },
+                            options: { responsive: true, plugins: { legend: { display: false } } }
+                        });
+                    });
+                });
+            </script>
+
+            <div class="b2b-form-card">
+                <p class="b2b-section-label">Entri Penjualan Harian</p>
+                <t t-if="not entries">
+                    <div class="b2b-empty" style="padding:24px;">Belum ada entri penjualan untuk rentang waktu yang dipilih.</div>
+                </t>
+                <t t-else="">
+                    <div class="b2b-table-wrap">
+                        <table class="b2b-table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Saluran</th>
+                                    <th>Jumlah Terjual (pcs)</th>
+                                    <th>Nilai Penjualan (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="entries" t-as="e">
+                                    <tr>
+                                        <td><t t-out="e.tanggal"/></td>
+                                        <td><t t-out="saluran_label.get(e.saluran, e.saluran)"/></td>
+                                        <td><t t-out="e.jumlah_terjual"/></td>
+                                        <td>Rp <t t-out="'{:,.0f}'.format(e.nilai_penjualan)"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </main>
+    </t>
+</template>
+
+</odoo>
