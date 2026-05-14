@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ============================================================ -->
+<!--  F-03: Produk Saya (list)                                     -->
+<!-- ============================================================ -->
+<template id="portal_produk_saya" name="Produk Saya">
+    <t t-call="itbpress_b2b.portal_base_layout">
+        <header class="b2b-topbar">
+            <h1>Produk Saya</h1>
+        </header>
+        <main class="b2b-content">
+            <t t-if="flash_success">
+                <div class="b2b-alert-success"><t t-out="flash_success"/></div>
+            </t>
+
+            <form method="GET" action="/kolaborasi/produk-saya" class="b2b-filter-bar">
+                <input type="text" name="search" placeholder="Cari nama produk..."
+                       style="width:220px;" t-att-value="search"/>
+                <select name="stage_filter" style="width:180px;">
+                    <option value="">Semua Stage</option>
+                    <option value="Diajukan"       t-att-selected="stage_filter == 'Diajukan'">Diajukan</option>
+                    <option value="Negosiasi"      t-att-selected="stage_filter == 'Negosiasi'">Negosiasi</option>
+                    <option value="Dalam Produksi" t-att-selected="stage_filter == 'Dalam Produksi'">Dalam Produksi</option>
+                    <option value="Dirilis"        t-att-selected="stage_filter == 'Dirilis'">Dirilis</option>
+                    <option value="Ditolak"        t-att-selected="stage_filter == 'Ditolak'">Ditolak</option>
+                </select>
+                <button type="submit" class="btn-b2b">Cari</button>
+                <span class="b2b-row-count"><t t-out="len(leads)"/> pengajuan</span>
+            </form>
+
+            <t t-if="not leads">
+                <div class="b2b-empty">
+                    Belum ada pengajuan kolaborasi.
+                    <p><a href="/kolaborasi/baru" class="btn-b2b">Buat Pengajuan Pertama</a></p>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="b2b-table-wrap">
+                    <table class="b2b-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Produk</th>
+                                <th>Jenis Produk</th>
+                                <th>Sistem</th>
+                                <th>Kuantitas</th>
+                                <th>Rencana Harga Lisensi</th>
+                                <th>Status</th>
+                                <th>Tanggal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="leads" t-as="lead">
+                                <tr>
+                                    <td><t t-out="lead.name"/></td>
+                                    <td><t t-out="lead.x_jenis_produk or '-'"/></td>
+                                    <td><t t-out="lead.x_sistem or '-'"/></td>
+                                    <td><t t-out="lead.x_kuantitas_produksi or 0"/> pcs</td>
+                                    <td>Rp <t t-out="'{:,.0f}'.format(lead.x_rencana_harga_lisensi)"/>/unit</td>
+                                    <td>
+                                        <span class="stage-chip"
+                                              t-att-style="stage_style.get(lead.stage_id.name, stage_style['Diajukan'])">
+                                            <t t-out="lead.stage_id.name"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <t t-if="lead.date_open">
+                                            <t t-out="lead.date_open.strftime('%d %b %Y')"/>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <a t-attf-href="/kolaborasi/produk-saya/#{lead.id}"
+                                           class="btn-b2b-ghost">Detail</a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </main>
+    </t>
+</template>
+
+<!-- ============================================================ -->
+<!--  F-03: Detail Pengajuan                                       -->
+<!-- ============================================================ -->
+<template id="portal_produk_detail" name="Detail Pengajuan">
+    <t t-call="itbpress_b2b.portal_base_layout">
+        <header class="b2b-topbar">
+            <a href="/kolaborasi/produk-saya" class="btn-b2b-ghost">&#8592; Kembali</a>
+            <h1><t t-out="lead.name"/></h1>
+        </header>
+        <main class="b2b-content">
+            <div class="b2b-2col" style="margin-bottom:16px;">
+                <div class="b2b-form-card">
+                    <p class="b2b-section-label">Informasi Pengajuan</p>
+                    <div class="b2b-info-row">
+                        <span class="b2b-info-label">Nama Produk</span>
+                        <span class="b2b-info-value"><t t-out="lead.name"/></span>
+                    </div>
+                    <div class="b2b-info-row">
+                        <span class="b2b-info-label">Nama PIC</span>
+                        <span class="b2b-info-value"><t t-out="lead.x_nama_pic or '-'"/></span>
+                    </div>
+                    <div class="b2b-info-row">
+                        <span class="b2b-info-label">Kontak PIC</span>
+                        <span class="b2b-info-value"><t t-out="lead.x_kontak_pic or '-'"/></span>
+                    </div>
+                    <div class="b2b-info-row">
+                        <span class="b2b-info-label">Tipe Produksi</span>
+                        <span class="b2b-info-value">
+                            <t t-out="'Produksi ITB Press' if lead.x_tipe_produksi == 'itb_press' else 'Produksi Mandiri'"/>
+                        </span>
+                    </div>
+                    <div class="b2b-info-row">
+                        <span class="b2b-info-label">Jenis Produk</span>
+                        <span class="b2b-info-value"><t t-out="lead.x_jenis_produk or '-'"/></span>
+                    </div>
+                    <div class="b2b-info-row">
+                        <span class="b2b-info-label">Sistem</span>
+                        <span class="b2b-info-value"><t t-out="lead.x_sistem or '-'"/></span>
+                    </div>
+                    <div class="b2b-info-row">
+                        <span class="b2b-info-label">Kuantitas Produksi</span>
+                        <span class="b2b-info-value"><t t-out="lead.x_kuantitas_produksi or 0"/> pcs</span>
+                    </div>
+                    <div class="b2b-info-row">
+                        <span class="b2b-info-label">Rencana Harga Lisensi</span>
+                        <span class="b2b-info-value">Rp <t t-out="'{:,.0f}'.format(lead.x_rencana_harga_lisensi)"/>/unit</span>
+                    </div>
+                    <div class="b2b-info-row">
+                        <span class="b2b-info-label">Status</span>
+                        <span class="b2b-info-value">
+                            <span class="stage-chip"
+                                  t-att-style="stage_style.get(lead.stage_id.name, stage_style['Diajukan'])">
+                                <t t-out="lead.stage_id.name"/>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="b2b-form-card">
+                    <p class="b2b-section-label">Timeline Progres</p>
+                    <t t-set="stages_ordered" t-value="['Diajukan','Negosiasi','Dalam Produksi','Dirilis']"/>
+                    <div class="b2b-timeline">
+                        <t t-foreach="stages_ordered" t-as="stage_name">
+                            <t t-set="is_current" t-value="lead.stage_id.name == stage_name"/>
+                            <t t-set="is_done" t-value="stages_ordered.index(lead.stage_id.name) > stages_ordered.index(stage_name) if lead.stage_id.name in stages_ordered else False"/>
+                            <div class="b2b-timeline-item">
+                                <div t-att-class="'b2b-timeline-dot' + (' done' if is_done else (' current' if is_current else ''))">
+                                    <t t-if="is_done">&#10003;</t>
+                                </div>
+                                <div class="b2b-timeline-body">
+                                    <div t-att-class="'b2b-timeline-title' + (' done' if is_done else (' current' if is_current else ''))">
+                                        <t t-out="stage_name"/>
+                                        <t t-if="is_current"> &#x25C2; Saat ini</t>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <t t-if="lead.x_tipe_produksi == 'itb_press'">
+                <div class="b2b-form-card">
+                    <p class="b2b-section-label">Histori HPP</p>
+                    <t t-if="not hpp_records">
+                        <div class="b2b-empty" style="padding:24px;">Belum ada data HPP untuk pengajuan ini.</div>
+                    </t>
+                    <t t-else="">
+                        <canvas id="chartHpp" style="width:100%;max-height:200px;margin-bottom:12px;"/>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"/>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                fetch('/kolaborasi/chart/hpp/<t t-out="lead.id"/>')
+                                    .then(function(r){return r.json();})
+                                    .then(function(data){
+                                        new Chart(document.getElementById('chartHpp').getContext('2d'), {
+                                            type: 'line',
+                                            data: { labels: data.map(function(d){return d.tanggal;}), datasets: [{ label: 'HPP per Unit (Rp)', data: data.map(function(d){return d.hpp;}), borderColor: '#075BA9', fill: false }] },
+                                            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+                                        });
+                                    });
+                            });
+                        </script>
+                        <p style="font-size:13px;margin-bottom:12px;">
+                            Harga Lisensi Disepakati: <strong>Rp <t t-out="'{:,.0f}'.format(lead.x_harga_lisensi_confirmed)"/>/unit</strong>
+                        </p>
+                        <div class="b2b-table-wrap">
+                            <table class="b2b-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>HPP per Unit (Rp)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="hpp_records" t-as="hpp">
+                                        <tr>
+                                            <td><t t-out="hpp.tanggal_entri"/></td>
+                                            <td>Rp <t t-out="'{:,.0f}'.format(hpp.total_hpp)"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </main>
+    </t>
+</template>
+
+</odoo>
