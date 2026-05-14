@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ============================================================ -->
+<!--  6.3 Historis HPP — List                                     -->
+<!-- ============================================================ -->
+<template id="internal_hpp" name="Historis HPP">
+    <t t-call="itbpress_b2b.internal_base_layout">
+        <header class="itb-topbar">
+            <h1 style="font-size:16px;font-weight:600;margin:0;">Historis HPP</h1>
+            <span style="margin-left:auto;font-size:12px;color:#999;" t-out="user_role"/>
+        </header>
+        <main class="itb-content">
+            <form method="GET" action="/hpp" class="itb-filter-bar">
+                <input type="text" name="search" class="itb-input"
+                       style="width:260px;" placeholder="Cari mitra atau produk..."
+                       t-att-value="search"/>
+                <button type="submit" class="itb-btn">Cari</button>
+                <span style="margin-left:auto;font-size:13px;color:#999;">
+                    <t t-out="len(hpp_summary)"/> produk
+                </span>
+            </form>
+
+            <t t-if="not hpp_summary">
+                <div class="itb-empty">Belum ada produk dengan tipe Produksi ITB Press.</div>
+            </t>
+            <t t-else="">
+                <div class="itb-table-wrap">
+                    <table class="itb-table">
+                        <thead>
+                            <tr>
+                                <th class="itb-th">Mitra</th>
+                                <th class="itb-th">Nama Produk</th>
+                                <th class="itb-th">Stage</th>
+                                <th class="itb-th">HPP Terkini (Rp/unit)</th>
+                                <th class="itb-th">Harga Lisensi (Rp/unit)</th>
+                                <th class="itb-th">Terakhir Diperbarui</th>
+                                <th class="itb-th"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="hpp_summary" t-as="row">
+                                <tr>
+                                    <td><t t-out="row['lead'].partner_id.name or '-'"/></td>
+                                    <td style="font-weight:500;"><t t-out="row['lead'].name"/></td>
+                                    <td>
+                                        <span class="itb-chip"
+                                              style="background:#f3f4f6;color:#6b7280;">
+                                            <t t-out="row['lead'].stage_id.name"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <t t-if="row['hpp_terkini']">
+                                            Rp <t t-out="'{:,.0f}'.format(row['hpp_terkini'])"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                    <td>
+                                        <t t-if="row['lead'].x_harga_lisensi_confirmed">
+                                            Rp <t t-out="'{:,.0f}'.format(row['lead'].x_harga_lisensi_confirmed)"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                    <td style="color:#999;">
+                                        <t t-if="row['terakhir_diperbarui']">
+                                            <t t-out="row['terakhir_diperbarui'].strftime('%d %b %Y')"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                    <td>
+                                        <a t-attf-href="/hpp/#{row['lead'].id}"
+                                           class="itb-btn-ghost">Detail</a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </main>
+    </t>
+</template>
+
+<!-- ============================================================ -->
+<!--  6.3 Historis HPP — Detail                                   -->
+<!-- ============================================================ -->
+<template id="internal_hpp_detail" name="Detail Historis HPP">
+    <t t-call="itbpress_b2b.internal_base_layout">
+        <header class="itb-topbar">
+            <a href="/hpp" class="itb-btn-ghost">&#8592; Kembali</a>
+            <h1 style="font-size:16px;font-weight:600;margin:0;">
+                <t t-out="lead.partner_id.name"/> / <t t-out="lead.name"/>
+            </h1>
+            <span style="margin-left:auto;font-size:12px;color:#999;" t-out="user_role"/>
+        </header>
+        <main class="itb-content">
+            <t t-if="flash_success">
+                <div class="itb-alert-s"><t t-out="flash_success"/></div>
+            </t>
+            <t t-if="flash_error">
+                <div class="itb-alert-e"><t t-out="flash_error"/></div>
+            </t>
+
+            <t t-if="lead.x_harga_lisensi_confirmed">
+                <p style="font-size:13px;margin-bottom:16px;">
+                    Harga Lisensi Disepakati:
+                    <strong style="color:#075BA9;">Rp <t t-out="'{:,.0f}'.format(lead.x_harga_lisensi_confirmed)"/>/unit</strong>
+                </p>
+            </t>
+
+            <!-- Chart -->
+            <t t-if="hpp_records">
+                <div class="itb-card" style="margin-bottom:20px;">
+                    <div class="itb-section-label">Tren HPP</div>
+                    <canvas id="chartHpp" style="max-height:180px;"/>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"/>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            fetch('/manajemen/chart/hpp/<t t-out="lead.id"/>')
+                                .then(function(r){return r.json();})
+                                .then(function(data){
+                                    new Chart(document.getElementById('chartHpp').getContext('2d'), {
+                                        type: 'line',
+                                        data: { labels: data.map(function(d){return d.tanggal;}), datasets: [{ label: 'HPP per Unit (Rp)', data: data.map(function(d){return d.hpp;}), borderColor: '#075BA9', fill: false }] },
+                                        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+                                    });
+                                });
+                        });
+                    </script>
+                </div>
+            </t>
+
+            <!-- Tambah entri HPP (marketing only) -->
+            <t t-if="is_marketing">
+                <div class="itb-card" style="margin-bottom:20px;">
+                    <div class="itb-section-label">Tambah Entri HPP</div>
+                    <form method="POST" t-attf-action="/hpp/#{lead.id}/tambah">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="itb-2col">
+                            <div>
+                                <label class="itb-form-label">Tanggal Penetapan</label>
+                                <input type="date" name="tanggal_entri" class="itb-form-control" required="required"/>
+                            </div>
+                            <div>
+                                <label class="itb-form-label">HPP per Unit (Rp)</label>
+                                <input type="number" name="total_hpp" class="itb-form-control" min="0" step="1" required="required"/>
+                            </div>
+                        </div>
+                        <div style="margin-top:12px;">
+                            <button type="submit" class="itb-btn">Tambah</button>
+                        </div>
+                    </form>
+                </div>
+            </t>
+
+            <!-- HPP table -->
+            <div class="itb-card">
+                <div class="itb-section-label">Riwayat HPP</div>
+                <t t-if="not hpp_records">
+                    <div class="itb-empty">Belum ada data HPP.</div>
+                </t>
+                <t t-else="">
+                    <div class="itb-table-wrap">
+                        <table class="itb-table">
+                            <thead>
+                                <tr>
+                                    <th class="itb-th">Tanggal</th>
+                                    <th class="itb-th">HPP per Unit (Rp)</th>
+                                    <th class="itb-th">Stempel Waktu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="hpp_records" t-as="hpp">
+                                    <tr>
+                                        <td><t t-out="hpp.tanggal_entri"/></td>
+                                        <td>Rp <t t-out="'{:,.0f}'.format(hpp.total_hpp)"/></td>
+                                        <td style="color:#999;font-size:12px;"><t t-out="hpp.stempel_waktu"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </main>
+    </t>
+</template>
+
+</odoo>
