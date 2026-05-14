@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ============================================================ -->
+<!--  F-02: Formulir Pengajuan                                     -->
+<!-- ============================================================ -->
+<template id="portal_pengajuan" name="Pengajuan Kolaborasi">
+    <t t-call="itbpress_b2b.portal_base_layout">
+        <header class="b2b-topbar">
+            <h1>Pengajuan Kolaborasi Baru</h1>
+        </header>
+        <main class="b2b-content">
+            <t t-if="error == 'required'">
+                <div class="b2b-alert-error">Semua kolom wajib diisi.</div>
+            </t>
+            <div class="b2b-form-card">
+                <form method="POST" action="/kolaborasi/submit">
+                    <input type="hidden" name="csrf_token" t-att-value="csrf_token"/>
+                    <div class="b2b-2col">
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Nama Perusahaan</label>
+                            <input type="text" class="b2b-form-control" readonly="readonly"
+                                   t-att-value="request.env.user.partner_id.name or ''"/>
+                            <div class="b2b-form-hint">Terisi otomatis dari akun Anda</div>
+                        </div>
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Email Perusahaan</label>
+                            <input type="email" class="b2b-form-control" readonly="readonly"
+                                   t-att-value="request.env.user.partner_id.email or ''"/>
+                            <div class="b2b-form-hint">Terisi otomatis dari akun Anda</div>
+                        </div>
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Nama PIC <span style="color:#dc2626;">*</span></label>
+                            <input type="text" name="nama_pic" class="b2b-form-control"
+                                   placeholder="Contoh: Budi Santoso" required="required"/>
+                        </div>
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Kontak PIC <span style="color:#dc2626;">*</span></label>
+                            <input type="text" name="kontak_pic" class="b2b-form-control"
+                                   placeholder="Contoh: 08123456789" required="required"/>
+                        </div>
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Tipe Produksi <span style="color:#dc2626;">*</span></label>
+                            <select name="tipe_produksi" class="b2b-form-control" required="required">
+                                <option value="">-- Pilih --</option>
+                                <option value="mandiri">Produksi Mandiri</option>
+                                <option value="itb_press">Produksi ITB Press</option>
+                            </select>
+                            <div class="b2b-form-hint">Produksi ITB Press mengaktifkan fitur Histori HPP</div>
+                        </div>
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Nama Produk <span style="color:#dc2626;">*</span></label>
+                            <input type="text" name="nama_produk" class="b2b-form-control"
+                                   placeholder="Contoh: Kaos Wisuda Teknik 2026" required="required"/>
+                        </div>
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Jenis Produk <span style="color:#dc2626;">*</span></label>
+                            <select name="jenis_produk" class="b2b-form-control" required="required">
+                                <option value="">-- Pilih --</option>
+                                <option value="kaos">Kaos</option>
+                                <option value="totebag">Totebag</option>
+                                <option value="tas_ransel">Tas Ransel</option>
+                                <option value="jaket">Jaket</option>
+                                <option value="polo_shirt">Polo Shirt</option>
+                                <option value="topi">Topi</option>
+                                <option value="lanyard">Lanyard</option>
+                                <option value="agenda">Agenda</option>
+                                <option value="lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Sistem Kolaborasi <span style="color:#dc2626;">*</span></label>
+                            <select name="sistem" class="b2b-form-control" required="required">
+                                <option value="">-- Pilih --</option>
+                                <option value="limited_edition">Limited Edition</option>
+                                <option value="bulanan">Bulanan</option>
+                                <option value="tahunan">Tahunan</option>
+                            </select>
+                        </div>
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Kuantitas Produksi (pcs) <span style="color:#dc2626;">*</span></label>
+                            <input type="number" name="kuantitas_produksi" class="b2b-form-control"
+                                   min="1" placeholder="500" required="required"/>
+                        </div>
+                        <div class="b2b-form-group">
+                            <label class="b2b-form-label">Rencana Harga Lisensi (Rp/unit) <span style="color:#dc2626;">*</span></label>
+                            <input type="number" name="rencana_harga_lisensi" class="b2b-form-control"
+                                   min="0" step="1" placeholder="5000" required="required"/>
+                            <div class="b2b-form-hint">Perkiraan harga lisensi yang Anda harapkan per unit produk</div>
+                        </div>
+                        <div class="b2b-form-group b2b-full">
+                            <label class="b2b-form-label">Catatan Tambahan</label>
+                            <textarea name="catatan" class="b2b-form-control is-textarea" rows="3"
+                                      placeholder="Spesifikasi warna, desain, atau kebutuhan khusus lainnya"/>
+                        </div>
+                    </div>
+                    <div class="b2b-form-actions">
+                        <button type="submit" class="btn-b2b">Kirim Pengajuan</button>
+                        <a href="/kolaborasi/produk-saya" class="btn-b2b-ghost">Batal</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </t>
+</template>
+
+</odoo>
