@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List view: Historis HPP -->
+    <record id="view_hpp_list" model="ir.ui.view">
+        <field name="name">x.hpp.list</field>
+        <field name="model">x.hpp</field>
+        <field name="arch" type="xml">
+            <tree string="Historis HPP" create="0" delete="0">
+                <field name="partner_id" string="Mitra"/>
+                <field name="pengajuan_id" string="Produk"/>
+                <field name="tanggal_entri" string="Tanggal"/>
+                <field name="total_hpp" string="HPP per Unit (Rp)" widget="monetary"/>
+                <field name="stempel_waktu" string="Stempel Waktu"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view: tambah entri HPP -->
+    <record id="view_hpp_form" model="ir.ui.view">
+        <field name="name">x.hpp.form</field>
+        <field name="model">x.hpp</field>
+        <field name="arch" type="xml">
+            <form string="Entri HPP">
+                <sheet>
+                    <group>
+                        <field name="pengajuan_id" string="Produk / Pengajuan"/>
+                        <field name="partner_id" string="Mitra" readonly="1"/>
+                        <field name="tanggal_entri" string="Tanggal Penetapan"/>
+                        <field name="total_hpp" string="HPP per Unit (Rp)" widget="monetary"/>
+                        <field name="stempel_waktu" string="Stempel Waktu" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Graph view: line chart HPP -->
+    <record id="view_hpp_graph" model="ir.ui.view">
+        <field name="name">x.hpp.graph</field>
+        <field name="model">x.hpp</field>
+        <field name="arch" type="xml">
+            <graph string="Tren HPP" type="line">
+                <field name="tanggal_entri" type="row" interval="month"/>
+                <field name="total_hpp" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_hpp_search" model="ir.ui.view">
+        <field name="name">x.hpp.search</field>
+        <field name="model">x.hpp</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id" string="Mitra"/>
+                <field name="pengajuan_id" string="Produk"/>
+                <group expand="1" string="Kelompokkan">
+                    <filter name="group_mitra" string="Mitra" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_produk" string="Produk" context="{'group_by': 'pengajuan_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_historis_hpp" model="ir.actions.act_window">
+        <field name="name">Historis HPP</field>
+        <field name="res_model">x.hpp</field>
+        <field name="view_mode">tree,graph,form</field>
+        <field name="search_view_id" ref="view_hpp_search"/>
+        <field name="context">{'group_by': ['partner_id']}</field>
+    </record>
+</odoo>
