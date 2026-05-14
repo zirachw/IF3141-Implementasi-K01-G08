@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ============================================================ -->
+<!--  6.2 Laporan Penjualan — Overview                            -->
+<!-- ============================================================ -->
+<template id="internal_laporan" name="Laporan Penjualan">
+    <t t-call="itbpress_b2b.internal_base_layout">
+        <header class="itb-topbar">
+            <h1 style="font-size:16px;font-weight:600;margin:0;">Laporan Penjualan</h1>
+            <span style="margin-left:auto;font-size:12px;color:#999;" t-out="user_role"/>
+        </header>
+        <main class="itb-content">
+            <t t-call="itbpress_b2b.internal_filter_bar">
+                <t t-set="filter_action">/laporan</t>
+            </t>
+
+            <t t-if="not partner_stats">
+                <div class="itb-empty">Belum ada produk yang dirilis dengan data penjualan.</div>
+            </t>
+            <t t-else="">
+                <!-- Charts -->
+                <div class="itb-2col" style="margin-bottom:20px;">
+                    <div class="itb-card">
+                        <div class="itb-section-label">Tren Penjualan</div>
+                        <canvas id="chartTren" style="max-height:180px;"/>
+                    </div>
+                    <div class="itb-card">
+                        <div class="itb-section-label">Per Saluran Distribusi</div>
+                        <canvas id="chartSaluran" style="max-height:180px;"/>
+                    </div>
+                </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"/>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var df = '<t t-out="date_from"/>';
+                        var dt = '<t t-out="date_to"/>';
+                        var p = '?date_from=' + df + '&amp;date_to=' + dt;
+                        fetch('/manajemen/chart/tren' + p).then(function(r){return r.json();}).then(function(data){
+                            new Chart(document.getElementById('chartTren').getContext('2d'), {
+                                type: 'line',
+                                data: { labels: data.map(function(d){return d.bulan;}), datasets: [{ label: 'Total (Rp)', data: data.map(function(d){return d.total;}), borderColor: '#075BA9', fill: false }] },
+                                options: { responsive: true, plugins: { legend: { display: false } } }
+                            });
+                        });
+                        fetch('/manajemen/chart/saluran' + p).then(function(r){return r.json();}).then(function(data){
+                            new Chart(document.getElementById('chartSaluran').getContext('2d'), {
+                                type: 'bar',
+                                data: { labels: data.map(function(d){return d.saluran;}), datasets: [{ data: data.map(function(d){return d.total;}), backgroundColor: '#075BA9' }] },
+                                options: { responsive: true, plugins: { legend: { display: false } } }
+                            });
+                        });
+                    });
+                </script>
+
+                <!-- Mitra table -->
+                <div class="itb-card">
+                    <div class="itb-section-label">Per Mitra</div>
+                    <div class="itb-table-wrap">
+                        <table class="itb-table">
+                            <thead>
+                                <tr>
+                                    <th class="itb-th">Mitra</th>
+                                    <th class="itb-th">Total Terjual (pcs)</th>
+                                    <th class="itb-th">Total Nilai (Rp)</th>
+                                    <th class="itb-th">Produk Dirilis</th>
+                                    <th class="itb-th"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="partner_stats" t-as="ps">
+                                    <tr>
+                                        <td style="font-weight:500;"><t t-out="ps['partner'].name"/></td>
+                                        <td><t t-out="ps['total_terjual']"/> pcs</td>
+                                        <td>Rp <t t-out="'{:,.0f}'.format(ps['total_nilai'])"/></td>
+                                        <td><t t-out="ps['produk_count']"/> produk</td>
+                                        <td>
+                                            <a t-attf-href="/laporan/#{ps['partner'].id}?date_from=#{date_from}&amp;date_to=#{date_to}"
+                                               class="itb-btn-ghost">Detail</a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </main>
+    </t>
+</template>
+
+<!-- ============================================================ -->
+<!--  6.2 Laporan Penjualan — Detail Mitra                        -->
+<!-- ============================================================ -->
+<template id="internal_laporan_mitra" name="Laporan Penjualan Mitra">
+    <t t-call="itbpress_b2b.internal_base_layout">
+        <header class="itb-topbar">
+            <a href="/laporan" class="itb-btn-ghost">&#8592; Kembali</a>
+            <h1 style="font-size:16px;font-weight:600;margin:0;"><t t-out="partner.name"/></h1>
+            <span style="margin-left:auto;font-size:12px;color:#999;" t-out="user_role"/>
+        </header>
+        <main class="itb-content">
+            <t t-call="itbpress_b2b.internal_filter_bar">
+                <t t-set="filter_action">/laporan/<t t-out="partner.id"/></t>
+            </t>
+
+            <t t-if="not product_stats">
+                <div class="itb-empty">Belum ada produk dirilis untuk mitra ini.</div>
+            </t>
+            <t t-else="">
+                <div class="itb-card">
+                    <div class="itb-section-label">Produk Dirilis</div>
+                    <div class="itb-table-wrap">
+                        <table class="itb-table">
+                            <thead>
+                                <tr>
+                                    <th class="itb-th">Nama Produk</th>
+                                    <th class="itb-th">Total Terjual (pcs)</th>
+                                    <th class="itb-th">Total Nilai (Rp)</th>
+                                    <th class="itb-th"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="product_stats" t-as="ps">
+                                    <tr>
+                                        <td style="font-weight:500;"><t t-out="ps['lead'].name"/></td>
+                                        <td><t t-out="ps['total_terjual']"/> pcs</td>
+                                        <td>Rp <t t-out="'{:,.0f}'.format(ps['total_nilai'])"/></td>
+                                        <td>
+                                            <a t-attf-href="/laporan/#{partner.id}/#{ps['lead'].id}?date_from=#{date_from}&amp;date_to=#{date_to}"
+                                               class="itb-btn-ghost">Detail</a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </main>
+    </t>
+</template>
+
+<!-- ============================================================ -->
+<!--  6.2 Laporan Penjualan — Detail Produk                       -->
+<!-- ============================================================ -->
+<template id="internal_laporan_produk" name="Laporan Penjualan Produk">
+    <t t-call="itbpress_b2b.internal_base_layout">
+        <header class="itb-topbar">
+            <a t-attf-href="/laporan/#{lead.partner_id.id}?date_from=#{date_from}&amp;date_to=#{date_to}"
+               class="itb-btn-ghost">&#8592; Kembali</a>
+            <h1 style="font-size:16px;font-weight:600;margin:0;"><t t-out="lead.name"/></h1>
+            <span style="margin-left:auto;font-size:12px;color:#999;" t-out="user_role"/>
+        </header>
+        <main class="itb-content">
+            <t t-if="flash_success">
+                <div class="itb-alert-s"><t t-out="flash_success"/></div>
+            </t>
+            <t t-if="flash_error">
+                <div class="itb-alert-e"><t t-out="flash_error"/></div>
+            </t>
+
+            <t t-call="itbpress_b2b.internal_filter_bar">
+                <t t-set="filter_action">/laporan/<t t-out="lead.partner_id.id"/>/<t t-out="lead.id"/></t>
+            </t>
+
+            <!-- Charts -->
+            <div class="itb-2col" style="margin-bottom:20px;">
+                <div class="itb-card">
+                    <div class="itb-section-label">Tren Penjualan</div>
+                    <canvas id="chartTren" style="max-height:180px;"/>
+                </div>
+                <div class="itb-card">
+                    <div class="itb-section-label">Per Saluran Distribusi</div>
+                    <canvas id="chartSaluran" style="max-height:180px;"/>
+                </div>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"/>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var lid = '<t t-out="lead.id"/>';
+                    var df = '<t t-out="date_from"/>';
+                    var dt = '<t t-out="date_to"/>';
+                    var p = '?lead_id=' + lid + '&amp;date_from=' + df + '&amp;date_to=' + dt;
+                    fetch('/manajemen/chart/tren' + p).then(function(r){return r.json();}).then(function(data){
+                        new Chart(document.getElementById('chartTren').getContext('2d'), {
+                            type: 'line',
+                            data: { labels: data.map(function(d){return d.bulan;}), datasets: [{ label: 'Total (Rp)', data: data.map(function(d){return d.total;}), borderColor: '#075BA9', fill: false }] },
+                            options: { responsive: true, plugins: { legend: { display: false } } }
+                        });
+                    });
+                    fetch('/manajemen/chart/saluran' + p).then(function(r){return r.json();}).then(function(data){
+                        new Chart(document.getElementById('chartSaluran').getContext('2d'), {
+                            type: 'bar',
+                            data: { labels: data.map(function(d){return d.saluran;}), datasets: [{ data: data.map(function(d){return d.total;}), backgroundColor: '#075BA9' }] },
+                            options: { responsive: true, plugins: { legend: { display: false } } }
+                        });
+                    });
+                });
+            </script>
+
+            <!-- Tambah entri (marketing only) -->
+            <t t-if="is_marketing">
+                <div class="itb-card" style="margin-bottom:20px;">
+                    <div class="itb-section-label">Tambah Entri Penjualan</div>
+                    <form method="POST" t-attf-action="/laporan/#{lead.partner_id.id}/#{lead.id}/tambah">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="itb-2col">
+                            <div>
+                                <label class="itb-form-label">Saluran</label>
+                                <select name="saluran" class="itb-select" style="width:100%;" required="required">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="website">Website ITB Press</option>
+                                    <option value="marketplace">Marketplace</option>
+                                    <option value="toko_fisik">Toko Fisik</option>
+                                    <option value="mobile_store">Mobile Store</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="itb-form-label">Tanggal</label>
+                                <input type="date" name="tanggal" class="itb-form-control" required="required"/>
+                            </div>
+                            <div>
+                                <label class="itb-form-label">Jumlah Terjual (pcs)</label>
+                                <input type="number" name="jumlah_terjual" class="itb-form-control" min="1" required="required"/>
+                            </div>
+                            <div>
+                                <label class="itb-form-label">Nilai Penjualan (Rp)</label>
+                                <input type="number" name="nilai_penjualan" class="itb-form-control" min="0" step="1" required="required"/>
+                            </div>
+                        </div>
+                        <div style="margin-top:12px;">
+                            <button type="submit" class="itb-btn">Tambah</button>
+                        </div>
+                    </form>
+                </div>
+            </t>
+
+            <!-- Entri table -->
+            <div class="itb-card">
+                <div class="itb-section-label">Entri Penjualan</div>
+                <t t-if="not entries">
+                    <div class="itb-empty">Belum ada entri untuk periode ini.</div>
+                </t>
+                <t t-else="">
+                    <div class="itb-table-wrap">
+                        <table class="itb-table">
+                            <thead>
+                                <tr>
+                                    <th class="itb-th">Tanggal</th>
+                                    <th class="itb-th">Saluran</th>
+                                    <th class="itb-th">Jumlah (pcs)</th>
+                                    <th class="itb-th">Nilai (Rp)</th>
+                                    <t t-if="is_marketing"><th class="itb-th"></th></t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="entries" t-as="e">
+                                    <tr>
+                                        <td><t t-out="e.tanggal"/></td>
+                                        <td><t t-out="saluran_label.get(e.saluran, e.saluran)"/></td>
+                                        <td><t t-out="e.jumlah_terjual"/></td>
+                                        <td>Rp <t t-out="'{:,.0f}'.format(e.nilai_penjualan)"/></td>
+                                        <t t-if="is_marketing">
+                                            <td>
+                                                <form method="POST"
+                                                      t-attf-action="/laporan/#{lead.partner_id.id}/#{lead.id}/hapus/#{e.id}"
+                                                      style="display:inline;">
+                                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                    <button type="submit" class="itb-btn-danger">Hapus</button>
+                                                </form>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </main>
+    </t>
+</template>
+
+</odoo>
