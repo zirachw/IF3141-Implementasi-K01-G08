@@ -1,106 +1,169 @@
-# IF3141 Sistem Informasi - Odoo Setup
+<div align="center">
+  <h1>ITB Press B2B</h1>
+  <p><em>Proyek ini dibuat untuk memenuhi Tugas Besar IF3141 Sistem Informasi</em></p>
+</div>
 
-## Introduction
+## Identitas Kelompok
+**Nomor Kelompok:** G08<br/>
+**Nomor Kelas:** K01
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/zirachw">
+        <img src="https://github.com/zirachw.png" width="80" style="border-radius: 50%;" /><br />
+        <b>Razi Rachman Widyadhana</b><br/>
+        <sub>13523004</sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/bry-ho">
+        <img src="https://github.com/bry-ho.png" width="80" style="border-radius: 50%;" /><br />
+        <b>Bryan Ho</b><br/>
+        <sub>13523029</sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/julius123123">
+        <img src="https://github.com/julius123123.png" width="80" style="border-radius: 50%;" /><br />
+        <b>Julius Arthur</b><br/>
+        <sub>13523030</sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/buege-putra">
+        <img src="https://github.com/buege-putra.png" width="80" style="border-radius: 50%;" /><br />
+        <b>Buege Mahara Putra</b><br/>
+        <sub>13523037</sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/FerdinandGabe1805">
+        <img src="https://github.com/FerdinandGabe1805.png" width="80" style="border-radius: 50%;" /><br />
+        <b>Ferdinand Gabe Tua Sinaga</b><br/>
+        <sub>13523051</sub>
+      </a>
+    </td>
+  </tr>
+</table>
 
-Odoo merupakan *Enterprise Resource Planning System* yang mampu melakukan implementasi modul modul kustom untuk menyelesaikan permasalahan proses bisnis pada suatu perusahaan.
+---
 
-Odoo memberikan opsi *on-premise solution* sehingga developer dapat melakukan implementasi kustom modul pada local environment.
+## Nama Sistem & Perusahaan
+**Nama Sistem:** ITB Press B2B — Sistem Manajemen Kolaborasi Produk<br/>
+**Perusahaan:** PT Inovasi Teknologi Bermedia Press (PT ITB Press)
 
-Repository ini diperuntukkan untuk Tugas Besar IF3141 Sistem Informasi. Untuk memulai silakan melakukan fork dan membuat repository private untuk workspace setiap kelompok.
+`[placeholder — logo perusahaan]`
 
+---
 
-## Pre-requisites
-Odoo diimplementasikan dengan Python environment dan database PostgreSQL. Repository ini sudah membungkus service aplikasi dan database melalui Docker.
+## Deskripsi Sistem
+ITB Press B2B adalah sistem manajemen kolaborasi produk berbasis web yang dibangun di atas platform Odoo 17. Sistem ini menjembatani dua sisi pengguna: mitra B2B yang mengakses portal pelanggan untuk mengajukan pesanan dan memantau penjualan, serta tim internal ITB Press yang mengelola pipeline CRM, historis HPP, dan laporan penjualan melalui halaman manajemen khusus.
 
-Sebelum memulai, pastikan dependency berikut sudah terpasang:
+Pada sisi portal, mitra dapat mengajukan permintaan kerja sama produk, memantau status produk yang sedang berjalan, serta melihat dasbor penjualan dengan filter periode. Pada sisi internal, Staf Marketing mengelola seluruh alur CRM dari pengajuan hingga selesai produksi, sementara Direktur dapat memantau laporan penjualan dan historis HPP untuk keperluan evaluasi bisnis.
 
-1. Docker Desktop
-	- Download: https://www.docker.com/products/docker-desktop/
-2. Python 3.11
-	- Digunakan untuk virtual environment (venv) pada proses development modul
+`[placeholder — context diagram / screenshot sistem]`
 
-## Struktur Direktori
+---
 
-- `/config`
-	- Untuk menyimpan konfigurasi Odoo
-- `/custom_addons`
-	- Tempat pengerjaan modul kustom
-- `/dump`
-	- Database dump yang dapat diakses scripts untuk proses import/export
-- `/scripts`
-	- Untuk melakukan database migration
-- `docker-compose.yml`
-	- Orchestration service Odoo dan PostgreSQL
+## Cara Menjalankan Sistem
+Berikut langkah persiapan dan menjalankan sistem pada lingkungan *development* berbasis Docker.
 
-## Step-by-step Installation
+**Prasyarat:** Docker Desktop terpasang ([unduh di sini](https://www.docker.com/products/docker-desktop/))
 
-1. Jalankan service Odoo dan PostgreSQL:
+Langkah-langkah:
 
-	```bash
-	docker compose up -d
-	```
+1. *Clone repository*
 
-2. Buka aplikasi pada browser:
-	- http://localhost:8069
+```bash
+git clone https://github.com/zirachw/IF3141-Implementasi-K01-G08.git
+cd IF3141-Implementasi-K01-G08
+```
 
-3. Login menggunakan kredensial default:
-	- Username: `admin`
-	- Password: `admin`
+*Expected result:* folder proyek tersedia dan struktur file terlihat.
 
-4. Aktifkan mode developer:
-	- Masuk ke **Settings**
-	- Nyalakan **Developer Mode / Developer Access**
+`[placeholder — screenshot clone repo]`
 
-5. Buat Python virtual environment pada workspace:
+2. Jalankan Docker *services*
 
-	```bash
-	python3.11 -m venv .venv
-	source .venv/bin/activate
-	pip install --upgrade pip
-	pip install -r requirements.txt
-	```
+```bash
+docker compose build
+docker compose up -d
+```
 
-6. Implementasikan modul pada folder:
-	- `custom_addons/`
+*Expected result:* container `web` (Odoo) dan `db` (PostgreSQL) berjalan; Odoo tersedia di `http://localhost:8069`.
 
-7. Setelah implementasi modul selesai, lakukan update daftar aplikasi:
-	- Masuk ke menu **Apps**
-	- Pilih **Update Apps List**
+`[placeholder — screenshot docker compose up]`
 
-8. Jika melakukan perubahan terhadap isi modul (modifying database), jangan lupa lakukan langkah database migration dengan mengikuti step di heading bawah ini.
+3. Instal modul dan muat data demo
 
-## Database Migration
+```bash
+docker compose run --rm web odoo -d postgres -i itbpress_b2b --stop-after-init
+docker compose restart web
+```
 
-Odoo menggunakan local database pada implementasinya. Maka dari itu dibutuhkan migration system yang dapat dilakukan melakukan **dump db** atau **import db**. Sebelum melakukan migration jangan lupa untuk selalu mematikan service odoo & databasenya dengan menjalankan :
+> Catatan: jika mengalami *error* saat instalasi, reset *volume* terlebih dahulu dengan `docker compose down -v` dan `docker compose up -d`, lalu jalankan kembali perintah di atas.
 
-```bash 
+*Expected result:* log Odoo menunjukkan bahwa data `demo_users`, `demo_leads`, dan data lainnya berhasil dimuat.
+
+`[placeholder — screenshot seeding]`
+
+4. Buka aplikasi di *browser*
+
+```
+http://localhost:8069
+```
+
+*Expected result:* halaman *login* ITB Press muncul.
+
+`[placeholder — screenshot halaman login]`
+
+5. *Login* dan akses sistem
+
+*Login* ke salah satu kredensial yang tersedia dan pastikan halaman sesuai dengan peran yang digunakan.
+
+*Expected result:* setiap peran melihat halaman dan menu sesuai haknya.
+
+Staf Marketing (internal):
+
+`[placeholder — screenshot halaman manajemen]`
+
+Direktur (internal):
+
+`[placeholder — screenshot halaman laporan]`
+
+Mitra B2B (portal):
+
+`[placeholder — screenshot halaman portal]`
+
+6. Setelah selesai, hentikan Docker *services*
+
+```bash
 docker compose down
 ```
 
-Apabila terdapat perubahan pada database dan perubahan tersebut ingin diteruskan ke anggota tim lain, lakukan export database terlebih dahulu menggunakan script pada folder `scripts`.
+> Catatan: gunakan `docker compose down -v` jika ingin sekaligus menghapus *volume* database dan seluruh data lokal container.
 
-- macOS/Linux:
+*Expected result:* seluruh container Docker berhenti dan *network* proyek dibersihkan.
 
-  ```bash
-  ./scripts/export_db.sh
-  ```
+`[placeholder — screenshot docker compose down]`
 
-- Windows:
+---
 
-  ```bat
-  scripts\export_db.cmd
-  ```
+## Kredensial Tiap Peran
+Berikut kredensial akun demo untuk tiap peran (akun lengkap tersedia di `custom_addons/itbpress_b2b/data/demo_users.xml`):
 
-Untuk melanjutkan pengerjaan dari hasil perubahan database rekan tim, lakukan import database terlebih dahulu :
+| Nama | Username | Password | Peran |
+|------|----------|----------|-------|
+| Budi Santoso | `marketing@itbpress.id` | `itbpress123` | Staf Marketing |
+| Siti Rahayu | `direktur@itbpress.id` | `itbpress123` | Direktur |
+| PT Akademia Nusantara | `mitra1@akademia.id` | `mitra123` | Mitra B2B |
+| CV Gamma Persada | `mitra2@gamma.id` | `mitra123` | Mitra B2B |
 
-- macOS/Linux:
+> Catatan: terdapat juga akun `admin` Odoo bawaan, tetapi akun tersebut berbeda dari akun peran di atas. Gunakan kredensial demo di atas untuk menguji fitur ITB Press B2B.
 
-  ```bash
-  ./scripts/import_db.sh
-  ```
+---
 
-- Windows:
+## Kesimpulan dan Saran
+Sistem ITB Press B2B berhasil menyediakan platform kolaborasi produk yang terintegrasi antara mitra eksternal dan tim internal ITB Press dalam satu aplikasi berbasis Odoo 17. Sistem ini mencakup alur pengajuan produk B2B, manajemen pipeline CRM, pemantauan historis HPP, serta pelaporan penjualan dengan filter periode yang fleksibel.
 
-  ```bat
-  scripts\import_db.cmd
-  ```
+Ke depannya, sistem dapat dikembangkan dengan menambahkan notifikasi *real-time* perubahan status pesanan, integrasi dengan sistem keuangan dan logistik ITB Press, serta fitur pengelolaan kontrak dan dokumen kerja sama secara digital. Penerapan *backup* data berkala dan pengamanan akses berbasis *role* yang lebih granular juga perlu diperhatikan agar keberlangsungan operasional sistem tetap terjaga.
