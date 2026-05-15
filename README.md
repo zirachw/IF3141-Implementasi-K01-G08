@@ -49,10 +49,14 @@
 ---
 
 ## Nama Sistem & Perusahaan
-**Nama Sistem:** ITB Press B2B — Sistem Manajemen Kolaborasi Produk<br/>
+**Nama Sistem:** ITB Press B2B - Sistem Manajemen Kolaborasi Mitra B2B<br/>
 **Perusahaan:** PT Inovasi Teknologi Bermedia Press (PT ITB Press)
 
-`[placeholder — logo perusahaan]`
+
+<p align="center">
+    <img width="320px" src="https://github.com/user-attachments/assets/3fe69476-0e2d-45d3-9971-7c974634a935">
+</p>
+
 
 ---
 
@@ -61,7 +65,9 @@ ITB Press B2B adalah sistem manajemen kolaborasi produk berbasis web yang dibang
 
 Pada sisi portal, mitra dapat mengajukan permintaan kerja sama produk, memantau status produk yang sedang berjalan, serta melihat dasbor penjualan dengan filter periode. Pada sisi internal, Staf Marketing mengelola seluruh alur CRM dari pengajuan hingga selesai produksi, sementara Direktur dapat memantau laporan penjualan dan historis HPP untuk keperluan evaluasi bisnis.
 
-`[placeholder — context diagram / screenshot sistem]`
+<p align="center">
+<img width="854" height="544" alt="image" src="https://github.com/user-attachments/assets/08bf84e1-dc6a-41bb-a93a-815c66abbbb7" />
+</p>
 
 ---
 
@@ -79,20 +85,21 @@ git clone https://github.com/zirachw/IF3141-Implementasi-K01-G08.git
 cd IF3141-Implementasi-K01-G08
 ```
 
-*Expected result:* folder proyek tersedia dan struktur file terlihat.
+*Expected result:* folder proyek tersedia.
 
-`[placeholder — screenshot clone repo]`
+<img width="1173" height="407" alt="image" src="https://github.com/user-attachments/assets/7e9b127e-9d85-4f13-9f46-776e86be0bf9" />
+
 
 2. Jalankan Docker *services*
 
 ```bash
-docker compose build
 docker compose up -d
 ```
 
 *Expected result:* container `web` (Odoo) dan `db` (PostgreSQL) berjalan; Odoo tersedia di `http://localhost:8069`.
 
-`[placeholder — screenshot docker compose up]`
+<img width="1346" height="177" alt="image" src="https://github.com/user-attachments/assets/6546cf54-a5a9-4de7-9ad7-e600015f49da" />
+
 
 3. Instal modul dan muat data demo
 
@@ -105,7 +112,8 @@ docker compose restart web
 
 *Expected result:* log Odoo menunjukkan bahwa data `demo_users`, `demo_leads`, dan data lainnya berhasil dimuat.
 
-`[placeholder — screenshot seeding]`
+<img width="1339" height="278" alt="image" src="https://github.com/user-attachments/assets/dfddcaae-7d2c-425b-917a-42b8cdf08694" />
+
 
 4. Buka aplikasi di *browser*
 
@@ -115,7 +123,9 @@ http://localhost:8069
 
 *Expected result:* halaman *login* ITB Press muncul.
 
-`[placeholder — screenshot halaman login]`
+<img width="1112" height="542" alt="image" src="https://github.com/user-attachments/assets/89ccde61-abcf-4287-acd9-3cf3b1532698" />
+
+<br>
 
 5. *Login* dan akses sistem
 
@@ -125,15 +135,23 @@ http://localhost:8069
 
 Staf Marketing (internal):
 
-`[placeholder — screenshot halaman manajemen]`
+<img width="1600" height="931" alt="image" src="https://github.com/user-attachments/assets/8a74a705-1e80-4ce3-a017-e160eb1c009a" />
+
+
+<br>
 
 Direktur (internal):
 
-`[placeholder — screenshot halaman laporan]`
+<img width="1600" height="931" alt="image" src="https://github.com/user-attachments/assets/da7828ea-6c66-4b7c-943b-636b00df8921" />
+
+
+<br>
 
 Mitra B2B (portal):
 
-`[placeholder — screenshot halaman portal]`
+<img width="1600" height="931" alt="image" src="https://github.com/user-attachments/assets/568c62eb-2408-487c-ae6a-66e2253f65b1" />
+
+<br>
 
 6. Setelah selesai, hentikan Docker *services*
 
@@ -145,7 +163,8 @@ docker compose down
 
 *Expected result:* seluruh container Docker berhenti dan *network* proyek dibersihkan.
 
-`[placeholder — screenshot docker compose down]`
+<img width="1332" height="300" alt="image" src="https://github.com/user-attachments/assets/4e006644-9ab1-4d87-9d1d-1a8710fa9e01" />
+
 
 ---
 
